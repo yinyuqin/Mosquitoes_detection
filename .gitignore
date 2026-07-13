@@ -4,6 +4,8 @@ __pycache__/
 *.pyo
 data/raw/humbugdb/*.zip
 data/raw/ood_positive/*.rar
+data/raw/ood_positive/Mosquitos Audio Samples/
+data_OOD/
 outputs/
 .DS_Store
 Thumbs.db
