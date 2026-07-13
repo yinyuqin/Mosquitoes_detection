@@ -1,0 +1,753 @@
+{
+  "input_rows": 9295,
+  "fields": [
+    "id",
+    "length",
+    "name",
+    "sample_rate",
+    "record_datetime",
+    "sound_type",
+    "species",
+    "gender",
+    "fed",
+    "plurality",
+    "age",
+    "method",
+    "mic_type",
+    "device_type",
+    "country",
+    "district",
+    "province",
+    "place",
+    "location_type"
+  ],
+  "labels": {
+    "background": 1900,
+    "mosquito": 6795,
+    "audio": 600
+  },
+  "unique_recording_names": 3237,
+  "duration_seconds": {
+    "count": 9295,
+    "sum": 120456.340084721,
+    "mean": 12.959261977915116,
+    "std": 31.98985788627453,
+    "min": 0.004885,
+    "p25": 2.56,
+    "median": 5.12,
+    "p75": 13.405703500000001,
+    "p95": 54.272,
+    "max": 1794.72
+  },
+  "duration_by_label": {
+    "audio": {
+      "count": 600,
+      "sum": 1845.966647,
+      "mean": 3.0766110783333334,
+      "std": 1.7988037375252233,
+      "min": 1.432398,
+      "p25": 2.143968,
+      "median": 2.444937,
+      "p75": 3.04264975,
+      "p95": 6.934977399999999,
+      "max": 17.347136
+    },
+    "background": {
+      "count": 1900,
+      "sum": 52667.101998654,
+      "mean": 27.71952736771263,
+      "std": 65.3912185562713,
+      "min": 0.119031,
+      "p25": 3.4460545000000002,
+      "median": 5.0208595,
+      "p75": 54.272,
+      "p95": 59.647999999999996,
+      "max": 1794.72
+    },
+    "mosquito": {
+      "count": 6795,
+      "sum": 65943.271439067,
+      "mean": 9.704675708471965,
+      "std": 11.126175299754927,
+      "min": 0.004885,
+      "p25": 2.56,
+      "median": 5.12,
+      "p75": 12.483679500000001,
+      "p95": 35.78,
+      "max": 117.76
+    }
+  },
+  "invalid_duration_row_numbers": [],
+  "missingness": {
+    "id": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "length": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "name": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "sample_rate": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "record_datetime": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "sound_type": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "species": {
+      "count": 3287,
+      "rate": 0.3536309844002152
+    },
+    "gender": {
+      "count": 5590,
+      "rate": 0.6013986013986014
+    },
+    "fed": {
+      "count": 5641,
+      "rate": 0.6068854222700376
+    },
+    "plurality": {
+      "count": 4455,
+      "rate": 0.47928994082840237
+    },
+    "age": {
+      "count": 8989,
+      "rate": 0.9670790747713824
+    },
+    "method": {
+      "count": 3254,
+      "rate": 0.350080688542227
+    },
+    "mic_type": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "device_type": {
+      "count": 1183,
+      "rate": 0.12727272727272726
+    },
+    "country": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "district": {
+      "count": 1376,
+      "rate": 0.1480365788058096
+    },
+    "province": {
+      "count": 1381,
+      "rate": 0.14857450242065626
+    },
+    "place": {
+      "count": 0,
+      "rate": 0.0
+    },
+    "location_type": {
+      "count": 0,
+      "rate": 0.0
+    }
+  },
+  "distributions": {
+    "sample_rate": [
+      {
+        "value": "44100",
+        "count": 6102,
+        "rate": 0.6564819795589026
+      },
+      {
+        "value": "8000",
+        "count": 3193,
+        "rate": 0.34351802044109736
+      }
+    ],
+    "species": [
+      {
+        "value": "<missing>",
+        "count": 3287,
+        "rate": 0.3536309844002152
+      },
+      {
+        "value": "an arabiensis",
+        "count": 1985,
+        "rate": 0.21355567509413664
+      },
+      {
+        "value": "an gambiae ss",
+        "count": 737,
+        "rate": 0.07928994082840236
+      },
+      {
+        "value": "culex quinquefasciatus",
+        "count": 678,
+        "rate": 0.0729424421732114
+      },
+      {
+        "value": "culex pipiens complex",
+        "count": 545,
+        "rate": 0.0586336740182894
+      },
+      {
+        "value": "an funestus ss",
+        "count": 381,
+        "rate": 0.04098977945131791
+      },
+      {
+        "value": "an squamosus",
+        "count": 141,
+        "rate": 0.015169445938676708
+      },
+      {
+        "value": "ma uniformis",
+        "count": 131,
+        "rate": 0.014093598708983324
+      },
+      {
+        "value": "an dirus",
+        "count": 129,
+        "rate": 0.013878429263044648
+      },
+      {
+        "value": "an harrisoni",
+        "count": 124,
+        "rate": 0.013340505648197956
+      },
+      {
+        "value": "ae aegypti",
+        "count": 123,
+        "rate": 0.013232920925228618
+      },
+      {
+        "value": "an maculatus",
+        "count": 117,
+        "rate": 0.012587412587412588
+      },
+      {
+        "value": "an funestus sl",
+        "count": 104,
+        "rate": 0.011188811188811189
+      },
+      {
+        "value": "an coustani",
+        "count": 92,
+        "rate": 0.009897794513179129
+      },
+      {
+        "value": "ae albopictus",
+        "count": 79,
+        "rate": 0.00849919311457773
+      }
+    ],
+    "gender": [
+      {
+        "value": "<missing>",
+        "count": 5590,
+        "rate": 0.6013986013986014
+      },
+      {
+        "value": "Female",
+        "count": 3655,
+        "rate": 0.3932221624529317
+      },
+      {
+        "value": "Male",
+        "count": 50,
+        "rate": 0.0053792361484669175
+      }
+    ],
+    "plurality": [
+      {
+        "value": "Single",
+        "count": 4812,
+        "rate": 0.5176976869284562
+      },
+      {
+        "value": "<missing>",
+        "count": 4455,
+        "rate": 0.47928994082840237
+      },
+      {
+        "value": "Plural",
+        "count": 28,
+        "rate": 0.003012372243141474
+      }
+    ],
+    "method": [
+      {
+        "value": "<missing>",
+        "count": 3254,
+        "rate": 0.350080688542227
+      },
+      {
+        "value": "HBN",
+        "count": 2123,
+        "rate": 0.22840236686390533
+      },
+      {
+        "value": "ABN",
+        "count": 1745,
+        "rate": 0.18773534158149544
+      },
+      {
+        "value": "LT",
+        "count": 1609,
+        "rate": 0.1731038192576654
+      },
+      {
+        "value": "LC",
+        "count": 378,
+        "rate": 0.0406670252824099
+      },
+      {
+        "value": "HLC",
+        "count": 186,
+        "rate": 0.020010758472296934
+      }
+    ],
+    "mic_type": [
+      {
+        "value": "telinga",
+        "count": 4919,
+        "rate": 0.5292092522861753
+      },
+      {
+        "value": "phone",
+        "count": 3193,
+        "rate": 0.34351802044109736
+      },
+      {
+        "value": "Telinga",
+        "count": 1183,
+        "rate": 0.12727272727272726
+      }
+    ],
+    "device_type": [
+      {
+        "value": "tascam",
+        "count": 2673,
+        "rate": 0.2875739644970414
+      },
+      {
+        "value": "olympus",
+        "count": 2246,
+        "rate": 0.24163528778913396
+      },
+      {
+        "value": "Alcatel 4015X",
+        "count": 1335,
+        "rate": 0.1436256051640667
+      },
+      {
+        "value": "<missing>",
+        "count": 1183,
+        "rate": 0.12727272727272726
+      },
+      {
+        "value": "itel A16",
+        "count": 1163,
+        "rate": 0.1251210328133405
+      },
+      {
+        "value": "Alcatel 4009X",
+        "count": 538,
+        "rate": 0.057880580957504035
+      },
+      {
+        "value": "Alcatel",
+        "count": 157,
+        "rate": 0.01689080150618612
+      }
+    ],
+    "country": [
+      {
+        "value": "Tanzania",
+        "count": 3836,
+        "rate": 0.41269499731038195
+      },
+      {
+        "value": "Thailand",
+        "count": 2205,
+        "rate": 0.23722431414739106
+      },
+      {
+        "value": "UK",
+        "count": 1381,
+        "rate": 0.14857450242065626
+      },
+      {
+        "value": "Kenya",
+        "count": 1335,
+        "rate": 0.1436256051640667
+      },
+      {
+        "value": "USA",
+        "count": 538,
+        "rate": 0.057880580957504035
+      }
+    ],
+    "district": [
+      {
+        "value": "Kilombero District",
+        "count": 3836,
+        "rate": 0.41269499731038195
+      },
+      {
+        "value": "Sai Yok District",
+        "count": 2205,
+        "rate": 0.23722431414739106
+      },
+      {
+        "value": "<missing>",
+        "count": 1376,
+        "rate": 0.1480365788058096
+      },
+      {
+        "value": "Oxfordshire",
+        "count": 1340,
+        "rate": 0.1441635287789134
+      },
+      {
+        "value": "Georgia",
+        "count": 538,
+        "rate": 0.057880580957504035
+      }
+    ],
+    "province": [
+      {
+        "value": "Morogoro",
+        "count": 3836,
+        "rate": 0.41269499731038195
+      },
+      {
+        "value": "Kanchanaburi Province",
+        "count": 2205,
+        "rate": 0.23722431414739106
+      },
+      {
+        "value": "<missing>",
+        "count": 1381,
+        "rate": 0.14857450242065626
+      },
+      {
+        "value": "Nairobi",
+        "count": 1335,
+        "rate": 0.1436256051640667
+      },
+      {
+        "value": "Atlanta",
+        "count": 538,
+        "rate": 0.057880580957504035
+      }
+    ],
+    "place": [
+      {
+        "value": "Ifakara",
+        "count": 3836,
+        "rate": 0.41269499731038195
+      },
+      {
+        "value": "field site near Pu Teuy Village",
+        "count": 2205,
+        "rate": 0.23722431414739106
+      },
+      {
+        "value": "Oxford Zoology",
+        "count": 1340,
+        "rate": 0.1441635287789134
+      },
+      {
+        "value": "USAMRU-K",
+        "count": 1335,
+        "rate": 0.1436256051640667
+      },
+      {
+        "value": "CDC insect cultures, Atlanta",
+        "count": 538,
+        "rate": 0.057880580957504035
+      },
+      {
+        "value": "LSTMH Culture cages, London",
+        "count": 41,
+        "rate": 0.004410973641742873
+      }
+    ],
+    "location_type": [
+      {
+        "value": "cup",
+        "count": 6061,
+        "rate": 0.6520710059171597
+      },
+      {
+        "value": "culture",
+        "count": 2071,
+        "rate": 0.22280796126949973
+      },
+      {
+        "value": "field",
+        "count": 1163,
+        "rate": 0.1251210328133405
+      }
+    ]
+  },
+  "integrity": {
+    "exact_duplicate_rows_beyond_first": 0,
+    "duplicate_ids": {},
+    "recordings_with_multiple_labels": 128,
+    "multiple_label_recordings_sample": {
+      "#1002-1011.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1012-1020.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1021-1039.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1040-1054.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1055-1071.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1072-1097.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1098-1102.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1103-1114.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1115-1126.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1127-1141.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#114-124.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1142-1159.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1160-1177.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1188-1203.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1204-1221.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1222-1239.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1240-1257.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#125-150.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1258-1267.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1268-1279.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1280-1295.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1296-1312.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1313-1334.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1335-1369.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1370-1393.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#1394-1413.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#151-173.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#187-188.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#209-219.wav": [
+        "background",
+        "mosquito"
+      ],
+      "#235-239.wav": [
+        "background",
+        "mosquito"
+      ]
+    },
+    "largest_recording_groups": [
+      [
+        "R4_cleaned recording_TEL_25-10-17.wav",
+        211
+      ],
+      [
+        "R4_cleaned recording_TEL_24-10-17.wav",
+        210
+      ],
+      [
+        "R4_cleaned recording_TEL_23-10-17.wav",
+        179
+      ],
+      [
+        "R4_cleaned recording_TEL_20-10-17.wav",
+        141
+      ],
+      [
+        "#423-487.wav",
+        124
+      ],
+      [
+        "R4_cleaned recording_TEL_19-10-17.wav",
+        117
+      ],
+      [
+        "R4_cleaned recording_18-10-17.wav",
+        98
+      ],
+      [
+        "R4_cleaned recording_17-10-17.wav",
+        83
+      ],
+      [
+        "CDC_Ae-albopictus_labelled_800.wav",
+        79
+      ],
+      [
+        "R4_cleaned recording_16-10-17.wav",
+        76
+      ],
+      [
+        "#540-576.wav",
+        72
+      ],
+      [
+        "#658-696.wav",
+        66
+      ],
+      [
+        "CDC_An-quadrimaculatus_labelled_800.wav",
+        64
+      ],
+      [
+        "#1335-1369.wav",
+        64
+      ],
+      [
+        "#26-60.wav",
+        56
+      ],
+      [
+        "CDC_An-albimanus_labelled_800.wav",
+        55
+      ],
+      [
+        "CDC_An-freeborni_labelled_800.wav",
+        52
+      ],
+      [
+        "#1072-1097.wav",
+        52
+      ],
+      [
+        "#380-406.wav",
+        52
+      ],
+      [
+        "R4_cleaned recording_13-10-17.wav",
+        50
+      ],
+      [
+        "#697-730.wav",
+        50
+      ],
+      [
+        "#963-987.wav",
+        50
+      ],
+      [
+        "#1370-1393.wav",
+        48
+      ],
+      [
+        "#939-962.wav",
+        48
+      ],
+      [
+        "#1313-1334.wav",
+        44
+      ],
+      [
+        "#753-781.wav",
+        44
+      ],
+      [
+        "#577-599.wav",
+        42
+      ],
+      [
+        "#918-938.wav",
+        42
+      ],
+      [
+        "LSTMH telinga audio - edited and labelled.wav",
+        41
+      ],
+      [
+        "CDC_An-stephensi_labelled_800.wav",
+        40
+      ]
+    ]
+  },
+  "external_overlap": {
+    "checked": false,
+    "reason": "No external metadata CSV supplied."
+  }
+}
