@@ -2,13 +2,7 @@
 __pycache__/
 *.pyc
 *.pyo
-data/raw/humbugdb/*.zip
-data/raw/ood_negative/*.zip
-data/raw/ood_positive/*.zip
-data/raw/ood_positive/*.rar
-data/raw/ood_positive/Mosquitos Audio Samples/
+data/raw/humbugdb/
 data/processed/
-data_OOD/
-outputs/
 .DS_Store
 Thumbs.db
