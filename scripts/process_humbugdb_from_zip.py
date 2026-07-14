@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import zipfile
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -50,12 +51,17 @@ def parse_args() -> argparse.Namespace:
         help="FFT window size"
     )
     parser.add_argument(
-        "--max-frames", type=int, default=128,
-        help="Maximum number of MFCC frames to keep"
+        "--window-size", type=int, default=64,
+        help="Base window size for MFCC frames. Features will be padded to a multiple of this size."
     )
     parser.add_argument(
         "--min-duration", type=float, default=0.1,
         help="Minimum duration in seconds for valid audio segments"
+    )
+    # 【新增】最大时长限制参数
+    parser.add_argument(
+        "--max-duration", type=float, default=60.0,
+        help="Maximum duration in seconds for valid audio segments (discard if longer)"
     )
     parser.add_argument(
         "--max-files", type=int, default=None,
@@ -94,10 +100,12 @@ def find_zip_containing_id(zip_dir: Path, record_id: str) -> Path | None:
 
 def load_audio_from_zip(zip_path: Path, record_id: str, target_sr: int) -> Tuple[np.ndarray, int]:
     """Load audio from inside a zip file without extracting."""
+    import io 
     zip_filename = f"{record_id}.wav"
     with zipfile.ZipFile(zip_path, "r") as zf:
         with zf.open(zip_filename) as audio_file:
-            y, sr = librosa.load(audio_file, sr=target_sr)
+            audio_bytes = audio_file.read()
+            y, sr = librosa.load(io.BytesIO(audio_bytes), sr=target_sr)
             return y, sr
 
 
@@ -107,11 +115,12 @@ def extract_mfcc(
     n_mfcc: int = 13,
     hop_length: int = 256,
     n_fft: int = 512,
-    max_frames: int = 128
+    window_size: int = 64  
 ) -> np.ndarray | None:
     """Extract MFCC features from audio signal.
     
     Returns None if the audio is too short to extract valid features.
+    Pads features to the nearest multiple of window_size.
     """
     n_samples = len(y)
     min_samples = n_fft
@@ -150,10 +159,10 @@ def extract_mfcc(
     
     features = np.concatenate([mfcc, mfcc_delta, mfcc_delta2], axis=0)
     
-    if n_frames > max_frames:
-        features = features[:, :max_frames]
-    elif n_frames < max_frames:
-        pad_width = max_frames - n_frames
+    actual_frames = features.shape[1]
+    if actual_frames % window_size != 0:
+        target_frames = math.ceil(actual_frames / window_size) * window_size
+        pad_width = target_frames - actual_frames
         features = np.pad(features, ((0, 0), (0, pad_width)), mode="constant")
     
     return features
@@ -167,8 +176,9 @@ def process_recording(
     n_mfcc: int,
     hop_length: int,
     n_fft: int,
-    max_frames: int,
-    min_duration: float
+    window_size: int,  
+    min_duration: float,
+    max_duration: float  # 【新增】传入最大时长参数
 ) -> List[Dict]:
     """Process a single recording and extract features for each labeled segment."""
     y, sr = load_audio_from_zip(zip_path, record_id, target_sr)
@@ -182,7 +192,8 @@ def process_recording(
         
         duration = float(segment["length"])
         
-        if duration < min_duration:
+        # 【修改】同时判断最小和最大时长
+        if duration < min_duration or duration > max_duration:
             continue
         
         actual_sr = int(segment["sample_rate"])
@@ -200,7 +211,7 @@ def process_recording(
         else:
             y_segment = np.pad(y_resampled, (0, max(0, samples_needed - len(y_resampled))))
         
-        mfcc_features = extract_mfcc(y_segment, sr_used, n_mfcc, hop_length, n_fft, max_frames)
+        mfcc_features = extract_mfcc(y_segment, sr_used, n_mfcc, hop_length, n_fft, window_size)
         
         if mfcc_features is None:
             continue
@@ -230,7 +241,7 @@ def main() -> None:
     all_features = []
     processed = 0
     skipped = 0
-    skipped_short = 0
+    skipped_filtered = 0  # 【修改】改名，涵盖太短和太长的情况
     
     for name, segments in recordings.items():
         if args.max_files and processed >= args.max_files:
@@ -249,18 +260,18 @@ def main() -> None:
             features = process_recording(
                 zip_path, record_id, segments,
                 args.sample_rate, args.n_mfcc, args.hop_length, args.n_fft,
-                args.max_frames, args.min_duration
+                args.window_size, args.min_duration, args.max_duration  # 【修改】传入新参数
             )
             all_features.extend(features)
             processed += 1
             if len(features) == 0:
-                skipped_short += 1
+                skipped_filtered += 1
         except Exception as e:
             print(f"Error processing {name}: {e}")
             skipped += 1
             continue
     
-    print(f"\nProcessed {processed} recordings, skipped {skipped}, skipped short {skipped_short}")
+    print(f"\nProcessed {processed} recordings, skipped {skipped}, skipped/filtered {skipped_filtered}")
     print(f"Extracted {len(all_features)} features")
     
     if not all_features:
@@ -268,9 +279,13 @@ def main() -> None:
         return
     
     labels = [1 if f["sound_type"] == "mosquito" else 0 for f in all_features]
-    mfcc_array = np.array([f["mfcc"] for f in all_features])
     
-    print(f"\nFeature shape: {mfcc_array.shape}")
+    mfcc_list = [f["mfcc"] for f in all_features]
+    mfcc_array = np.empty(len(mfcc_list), dtype=object)
+    mfcc_array[:] = mfcc_list
+    
+    print(f"\nFeature array shape (object): {mfcc_array.shape}")
+    print(f"Sample feature shapes: {[f.shape for f in mfcc_array[:3]]}")
     print(f"Labels: {sum(labels)} mosquito, {len(labels) - sum(labels)} non-mosquito")
     
     np.save(args.output / "mfcc_features.npy", mfcc_array)
@@ -281,20 +296,21 @@ def main() -> None:
         "sample_rate": args.sample_rate,
         "hop_length": args.hop_length,
         "n_fft": args.n_fft,
-        "max_frames": args.max_frames,
+        "window_size": args.window_size,  
         "min_duration": args.min_duration,
+        "max_duration": args.max_duration,  # 【新增】记录到 metadata
         "total_segments": len(all_features),
         "mosquito_count": sum(labels),
         "non_mosquito_count": len(labels) - sum(labels),
         "processed_recordings": processed,
         "skipped_recordings": skipped,
-        "skipped_short_segments": skipped_short
+        "skipped_filtered_segments": skipped_filtered  # 【修改】更新字段名
     }
     with (args.output / "metadata.json").open("w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=2)
     
     print(f"\nSaved features to {args.output}")
-    print(f"  - mfcc_features.npy: {mfcc_array.shape}")
+    print(f"  - mfcc_features.npy: {len(mfcc_array)} variable-length features (dtype=object, padded to multiples of {args.window_size})")
     print(f"  - labels.npy: {len(labels)} labels")
     print(f"  - metadata.json: processing parameters")
 
