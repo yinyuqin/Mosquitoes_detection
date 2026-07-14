@@ -4,5 +4,6 @@ __pycache__/
 *.pyo
 data/raw/humbugdb/
 data/processed/
+outputs/
 .DS_Store
 Thumbs.db

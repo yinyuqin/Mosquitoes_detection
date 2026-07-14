@@ -65,37 +65,30 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--max-files", type=int, default=None,
-        help="Maximum number of audio files to process (for testing)"
+        help="Maximum number of labelled audio clips to process (for testing)"
     )
     return parser.parse_args()
 
 
-def load_metadata(csv_path: Path) -> Dict[str, List[dict]]:
-    """Load metadata CSV and group by recording name."""
-    recordings: Dict[str, List[dict]] = {}
-    
+def load_metadata(csv_path: Path) -> List[dict]:
+    """Load one metadata row per labelled audio clip."""
     with csv_path.open("r", encoding="utf-8-sig", newline="") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            name = row["name"]
-            if name not in recordings:
-                recordings[name] = []
-            recordings[name].append(row)
-    
-    return recordings
+        return list(csv.DictReader(f))
 
 
-def find_zip_containing_id(zip_dir: Path, record_id: str) -> Path | None:
-    """Find which zip file contains the audio with given id."""
-    zip_filename = f"{record_id}.wav"
+def build_zip_index(zip_dir: Path) -> Dict[str, Path]:
+    """Map each clip ID to its ZIP once instead of rescanning ZIPs per sample."""
+    index: Dict[str, Path] = {}
     for zip_path in sorted(zip_dir.glob("humbugdb_neurips_2021_*.zip")):
         try:
             with zipfile.ZipFile(zip_path, "r") as zf:
-                if zip_filename in zf.namelist():
-                    return zip_path
+                for member in zf.namelist():
+                    member_path = Path(member)
+                    if member_path.suffix.lower() == ".wav":
+                        index[member_path.stem] = zip_path
         except zipfile.BadZipFile:
             continue
-    return None
+    return index
 
 
 def load_audio_from_zip(zip_path: Path, record_id: str, target_sr: int) -> Tuple[np.ndarray, int]:
@@ -168,65 +161,43 @@ def extract_mfcc(
     return features
 
 
-def process_recording(
+def process_segment(
     zip_path: Path,
-    record_id: str,
-    segments: List[dict],
+    segment: dict,
     target_sr: int,
     n_mfcc: int,
     hop_length: int,
     n_fft: int,
-    window_size: int,  
-    min_duration: float,
-    max_duration: float  # 【新增】传入最大时长参数
-) -> List[Dict]:
-    """Process a single recording and extract features for each labeled segment."""
+    window_size: int,
+) -> Dict:
+    """Load the clip named by this CSV row and extract one MFCC sample."""
+    record_id = segment["id"]
     y, sr = load_audio_from_zip(zip_path, record_id, target_sr)
-    results = []
-    
-    for segment in segments:
-        sound_type = segment["sound_type"].strip().lower()
-        
-        if sound_type not in ("mosquito", "background", "audio"):
-            continue
-        
-        duration = float(segment["length"])
-        
-        # 【修改】同时判断最小和最大时长
-        if duration < min_duration or duration > max_duration:
-            continue
-        
-        actual_sr = int(segment["sample_rate"])
-        
-        if actual_sr != sr:
-            y_resampled = librosa.resample(y, orig_sr=sr, target_sr=actual_sr)
-            sr_used = actual_sr
-        else:
-            y_resampled = y
-            sr_used = sr
-        
-        samples_needed = int(duration * sr_used)
-        if len(y_resampled) >= samples_needed:
-            y_segment = y_resampled[:samples_needed]
-        else:
-            y_segment = np.pad(y_resampled, (0, max(0, samples_needed - len(y_resampled))))
-        
-        mfcc_features = extract_mfcc(y_segment, sr_used, n_mfcc, hop_length, n_fft, window_size)
-        
-        if mfcc_features is None:
-            continue
-        
-        results.append({
-            "record_id": record_id,
-            "name": segment["name"],
-            "sound_type": sound_type,
-            "length": duration,
-            "sample_rate": sr_used,
-            "mfcc_shape": mfcc_features.shape,
-            "mfcc": mfcc_features
-        })
-    
-    return results
+    if sr != target_sr:
+        raise RuntimeError(f"Expected sample rate {target_sr}, got {sr} for {record_id}.")
+
+    duration = float(segment["length"])
+    samples_needed = int(round(duration * target_sr))
+    if len(y) >= samples_needed:
+        y_segment = y[:samples_needed]
+    else:
+        y_segment = np.pad(y, (0, samples_needed - len(y)))
+
+    mfcc_features = extract_mfcc(
+        y_segment, target_sr, n_mfcc, hop_length, n_fft, window_size
+    )
+    if mfcc_features is None:
+        raise ValueError("Audio is too short for MFCC extraction.")
+
+    return {
+        "record_id": record_id,
+        "name": segment["name"],
+        "sound_type": segment["sound_type"].strip().lower(),
+        "length": duration,
+        "sample_rate": target_sr,
+        "mfcc_shape": mfcc_features.shape,
+        "mfcc": mfcc_features,
+    }
 
 
 def main() -> None:
@@ -235,43 +206,76 @@ def main() -> None:
     args.output.mkdir(parents=True, exist_ok=True)
     
     print(f"Loading metadata from {args.csv}")
-    recordings = load_metadata(args.csv)
-    print(f"Found {len(recordings)} unique recordings")
+    segments = load_metadata(args.csv)
+    unique_source_recordings = len({row["name"] for row in segments})
+    print(
+        f"Found {len(segments)} labelled clips from "
+        f"{unique_source_recordings} source recordings"
+    )
+
+    print(f"Indexing ZIP files in {args.zip_dir}")
+    zip_index = build_zip_index(args.zip_dir)
+    print(f"Indexed {len(zip_index)} WAV clips")
     
     all_features = []
     processed = 0
     skipped = 0
     skipped_filtered = 0  # 【修改】改名，涵盖太短和太长的情况
+    skipped_too_short = 0
+    skipped_too_long = 0
+    skipped_unsupported_label = 0
     
-    for name, segments in recordings.items():
+    for segment in segments:
         if args.max_files and processed >= args.max_files:
             break
-        
-        record_id = segments[0]["id"]
-        zip_path = find_zip_containing_id(args.zip_dir, record_id)
-        
+
+        sound_type = segment["sound_type"].strip().lower()
+        duration = float(segment["length"])
+        if sound_type not in ("mosquito", "background", "audio"):
+            skipped_unsupported_label += 1
+            skipped_filtered += 1
+            continue
+        if duration < args.min_duration:
+            skipped_too_short += 1
+            skipped_filtered += 1
+            continue
+        if duration > args.max_duration:
+            skipped_too_long += 1
+            skipped_filtered += 1
+            continue
+
+        record_id = segment["id"]
+        zip_path = zip_index.get(record_id)
         if zip_path is None:
             skipped += 1
             continue
-        
-        print(f"Processing {name} (id={record_id})...")
-        
+
         try:
-            features = process_recording(
-                zip_path, record_id, segments,
-                args.sample_rate, args.n_mfcc, args.hop_length, args.n_fft,
-                args.window_size, args.min_duration, args.max_duration  # 【修改】传入新参数
+            feature = process_segment(
+                zip_path,
+                segment,
+                args.sample_rate,
+                args.n_mfcc,
+                args.hop_length,
+                args.n_fft,
+                args.window_size,
             )
-            all_features.extend(features)
+            all_features.append(feature)
             processed += 1
-            if len(features) == 0:
-                skipped_filtered += 1
+            if processed == 1 or processed % 100 == 0:
+                print(
+                    f"Processed {processed} clips "
+                    f"(filtered={skipped_filtered}, missing/failed={skipped})"
+                )
         except Exception as e:
-            print(f"Error processing {name}: {e}")
+            print(f"Error processing id={record_id}: {e}")
             skipped += 1
             continue
-    
-    print(f"\nProcessed {processed} recordings, skipped {skipped}, skipped/filtered {skipped_filtered}")
+
+    print(
+        f"\nProcessed {processed} clips, skipped {skipped}, "
+        f"filtered {skipped_filtered}"
+    )
     print(f"Extracted {len(all_features)} features")
     
     if not all_features:
@@ -279,6 +283,8 @@ def main() -> None:
         return
     
     labels = [1 if f["sound_type"] == "mosquito" else 0 for f in all_features]
+    groups = np.asarray([f["name"] for f in all_features], dtype=str)
+    sample_ids = np.asarray([f["record_id"] for f in all_features], dtype=str)
     
     mfcc_list = [f["mfcc"] for f in all_features]
     mfcc_array = np.empty(len(mfcc_list), dtype=object)
@@ -290,6 +296,8 @@ def main() -> None:
     
     np.save(args.output / "mfcc_features.npy", mfcc_array)
     np.save(args.output / "labels.npy", labels)
+    np.save(args.output / "groups.npy", groups)
+    np.save(args.output / "sample_ids.npy", sample_ids)
     
     metadata = {
         "n_mfcc": args.n_mfcc,
@@ -299,12 +307,17 @@ def main() -> None:
         "window_size": args.window_size,  
         "min_duration": args.min_duration,
         "max_duration": args.max_duration,  # 【新增】记录到 metadata
+        "total_input_rows": len(segments),
         "total_segments": len(all_features),
         "mosquito_count": sum(labels),
         "non_mosquito_count": len(labels) - sum(labels),
-        "processed_recordings": processed,
-        "skipped_recordings": skipped,
-        "skipped_filtered_segments": skipped_filtered  # 【修改】更新字段名
+        "processed_audio_clips": processed,
+        "processed_recordings": len(set(groups.tolist())),
+        "skipped_missing_or_failed": skipped,
+        "skipped_filtered_segments": skipped_filtered,
+        "skipped_too_short": skipped_too_short,
+        "skipped_too_long": skipped_too_long,
+        "skipped_unsupported_label": skipped_unsupported_label,
     }
     with (args.output / "metadata.json").open("w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=2)
@@ -312,6 +325,8 @@ def main() -> None:
     print(f"\nSaved features to {args.output}")
     print(f"  - mfcc_features.npy: {len(mfcc_array)} variable-length features (dtype=object, padded to multiples of {args.window_size})")
     print(f"  - labels.npy: {len(labels)} labels")
+    print(f"  - groups.npy: {len(groups)} source-recording group IDs")
+    print(f"  - sample_ids.npy: {len(sample_ids)} clip IDs")
     print(f"  - metadata.json: processing parameters")
 
 
