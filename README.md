@@ -90,6 +90,24 @@ RTX 4060 上的当前实验使用阈值 0.32，在原始录音隔离的 HumBugDB
 混淆矩阵和局限性见
 [`docs/experiments/logistic_mil_gpu.md`](docs/experiments/logistic_mil_gpu.md)。
 
+### 训练 GPU MLP MIL 模型
+
+```powershell
+uv run python .\scripts\train_mlp_mil_gpu.py `
+  --groups .\data\processed\humbugdb_mfcc\groups.npy
+```
+
+MLP 沿用与 Logistic 完全相同的数据切分、窗口、Top-3 聚合和损失，仅将窗口分类器
+替换为 `78 → 128 → 64 → 1` 的两层非线性网络。相同测试集上的主要结果为：
+
+| 模型 | Accuracy | Recall | F1 | FPR | ROC-AUC | AP |
+|---|---:|---:|---:|---:|---:|---:|
+| Logistic MIL | 90.79% | 90.39% | 93.50% | 8.13% | 96.35% | 98.47% |
+| MLP MIL | 94.09% | 95.42% | 95.95% | 9.55% | 98.70% | 99.55% |
+
+MLP 提高了召回率和整体区分能力，但 F1 最优工作点的误报率略高。完整配置、混淆
+矩阵和公平对比见 [`docs/experiments/mlp_mil_gpu.md`](docs/experiments/mlp_mil_gpu.md)。
+
 ### 绘制标签时长分布
 
 ```powershell
@@ -130,6 +148,7 @@ uv pip install -r requirements.txt
 - `docs/data_sources.md`: 数据来源、许可证和数据使用说明；
 - `docs/analysis/dataset_analysis.md`: 数据集分析报告；
 - `docs/experiments/logistic_mil_gpu.md`: GPU Logistic MIL 基线实验报告；
+- `docs/experiments/mlp_mil_gpu.md`: GPU MLP MIL 实验及 Logistic 对比报告；
 - `docs/PML_2026_coursework.pdf`: 课程作业官方要求文档。
 
 ## 评分标准
