@@ -1,0 +1,17 @@
+{
+  "n_mfcc": 13,
+  "sample_rate": 8000,
+  "hop_length": 256,
+  "n_fft": 512,
+  "window_size": 64,
+  "min_duration": 0.1,
+  "max_duration": 60.0,
+  "total_input_rows": 9295,
+  "total_segments": 5,
+  "mosquito_count": 5,
+  "non_mosquito_count": 0,
+  "processed_audio_clips": 5,
+  "processed_recordings": 1,
+  "skipped_missing_or_failed": 0,
+  "skipped_filtered_segments": 1
+}

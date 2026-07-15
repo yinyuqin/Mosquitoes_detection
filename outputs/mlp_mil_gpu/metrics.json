@@ -1,0 +1,110 @@
+{
+  "model": {
+    "type": "window_mlp_mil",
+    "hidden_dims": [
+      128,
+      64
+    ],
+    "dropout": 0.2,
+    "parameter_count": 18817
+  },
+  "configuration": {
+    "features": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\data\\processed\\humbugdb_mfcc\\mfcc_features.npy",
+    "labels": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\data\\processed\\humbugdb_mfcc\\labels.npy",
+    "groups": "data\\processed\\humbugdb_mfcc\\groups.npy",
+    "output_dir": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\outputs\\mlp_mil_gpu",
+    "window_size": 64,
+    "hop_size": 32,
+    "top_k": 3,
+    "test_size": 0.2,
+    "folds": 5,
+    "epochs": 100,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "negative_instance_weight": 0.5,
+    "patience": 12,
+    "hidden_dim_1": 128,
+    "hidden_dim_2": 64,
+    "dropout": 0.2,
+    "num_workers": 0,
+    "seed": 2026,
+    "device": "cuda"
+  },
+  "device": "cuda",
+  "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "threshold_source": "training out-of-fold predictions",
+  "elapsed_seconds": 249.5664783999964,
+  "fold_best_epochs": [
+    10,
+    17,
+    13,
+    17,
+    14
+  ],
+  "fold_best_validation_losses": [
+    0.15662963363670956,
+    0.18010561937286007,
+    0.2697920531323012,
+    0.1475424387401285,
+    0.16003243427653846
+  ],
+  "oof_metrics": {
+    "threshold": 0.2,
+    "accuracy": 0.9364511691884456,
+    "balanced_accuracy": 0.9240396704125646,
+    "precision": 0.9622104063805546,
+    "recall_sensitivity": 0.950656660412758,
+    "specificity": 0.8974226804123712,
+    "false_positive_rate": 0.10257731958762886,
+    "f1": 0.9563986409966025,
+    "matthews_correlation_coefficient": 0.8394825391436669,
+    "roc_auc": 0.9844763157385736,
+    "pr_auc_average_precision": 0.9946341580316119,
+    "brier_score": 0.05375286169323493,
+    "confusion_matrix": [
+      [
+        1741,
+        199
+      ],
+      [
+        263,
+        5067
+      ]
+    ],
+    "sample_count": 7270,
+    "class_counts": {
+      "0": 1940,
+      "1": 5330
+    }
+  },
+  "test_metrics": {
+    "threshold": 0.2,
+    "accuracy": 0.9409214092140922,
+    "balanced_accuracy": 0.9293237250554324,
+    "precision": 0.9648729446935725,
+    "recall_sensitivity": 0.9541759053954176,
+    "specificity": 0.9044715447154471,
+    "false_positive_rate": 0.09552845528455285,
+    "f1": 0.9594946116685247,
+    "matthews_correlation_coefficient": 0.850578298194996,
+    "roc_auc": 0.9869531123249149,
+    "pr_auc_average_precision": 0.9954998470376093,
+    "brier_score": 0.048594165593385696,
+    "confusion_matrix": [
+      [
+        445,
+        47
+      ],
+      [
+        62,
+        1291
+      ]
+    ],
+    "sample_count": 1845,
+    "class_counts": {
+      "0": 492,
+      "1": 1353
+    }
+  }
+}

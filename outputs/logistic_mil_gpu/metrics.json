@@ -1,0 +1,83 @@
+{
+  "configuration": {
+    "features": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\data\\processed\\humbugdb_mfcc\\mfcc_features.npy",
+    "labels": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\data\\processed\\humbugdb_mfcc\\labels.npy",
+    "groups": "data\\processed\\humbugdb_mfcc\\groups.npy",
+    "output_dir": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\outputs\\logistic_mil_gpu",
+    "window_size": 64,
+    "hop_size": 32,
+    "top_k": 3,
+    "test_size": 0.2,
+    "folds": 5,
+    "epochs": 50,
+    "batch_size": 64,
+    "learning_rate": 0.01,
+    "weight_decay": 0.0001,
+    "negative_instance_weight": 0.5,
+    "patience": 8,
+    "num_workers": 0,
+    "seed": 2026,
+    "device": "cuda"
+  },
+  "device": "cuda",
+  "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "threshold_source": "training out-of-fold predictions",
+  "oof_metrics": {
+    "threshold": 0.32,
+    "accuracy": 0.9059147180192573,
+    "balanced_accuracy": 0.9104267809133285,
+    "precision": 0.9687247780468119,
+    "recall_sensitivity": 0.9007504690431519,
+    "specificity": 0.9201030927835051,
+    "false_positive_rate": 0.07989690721649484,
+    "f1": 0.9335018471709119,
+    "matthews_correlation_coefficient": 0.7794402526667665,
+    "roc_auc": 0.9622079843716755,
+    "pr_auc_average_precision": 0.9856004783266588,
+    "brier_score": 0.08533560578590894,
+    "confusion_matrix": [
+      [
+        1785,
+        155
+      ],
+      [
+        529,
+        4801
+      ]
+    ],
+    "sample_count": 7270,
+    "class_counts": {
+      "0": 1940,
+      "1": 5330
+    }
+  },
+  "test_metrics": {
+    "threshold": 0.32,
+    "accuracy": 0.907859078590786,
+    "balanced_accuracy": 0.9113082039911309,
+    "precision": 0.9683293745051464,
+    "recall_sensitivity": 0.9039172209903917,
+    "specificity": 0.9186991869918699,
+    "false_positive_rate": 0.08130081300813008,
+    "f1": 0.9350152905198776,
+    "matthews_correlation_coefficient": 0.7828267360946972,
+    "roc_auc": 0.963546830590257,
+    "pr_auc_average_precision": 0.9846833466845419,
+    "brier_score": 0.08162607252597809,
+    "confusion_matrix": [
+      [
+        452,
+        40
+      ],
+      [
+        130,
+        1223
+      ]
+    ],
+    "sample_count": 1845,
+    "class_counts": {
+      "0": 492,
+      "1": 1353
+    }
+  }
+}
