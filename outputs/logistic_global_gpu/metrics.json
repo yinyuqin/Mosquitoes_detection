@@ -1,0 +1,79 @@
+{
+  "configuration": {
+    "features": "D:\\desktop\\MosDet\\Mosquitoes_detection\\data\\processed\\humbugdb_mfcc\\mfcc_features.npy",
+    "labels": "D:\\desktop\\MosDet\\Mosquitoes_detection\\data\\processed\\humbugdb_mfcc\\labels.npy",
+    "groups": null,
+    "output_dir": "D:\\desktop\\MosDet\\Mosquitoes_detection\\outputs\\logistic_global_gpu",
+    "test_size": 0.2,
+    "folds": 5,
+    "epochs": 50,
+    "batch_size": 64,
+    "learning_rate": 0.01,
+    "weight_decay": 0.0001,
+    "patience": 8,
+    "num_workers": 0,
+    "seed": 2026,
+    "device": "cuda"
+  },
+  "device": "cuda",
+  "gpu_name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "threshold_source": "training out-of-fold predictions",
+  "oof_metrics": {
+    "threshold": 0.33,
+    "accuracy": 0.941716950082282,
+    "balanced_accuracy": 0.9283858146767818,
+    "precision": 0.9632837507060817,
+    "recall_sensitivity": 0.9569771791994014,
+    "specificity": 0.8997944501541624,
+    "false_positive_rate": 0.10020554984583761,
+    "f1": 0.9601201088486441,
+    "matthews_correlation_coefficient": 0.851962705015125,
+    "roc_auc": 0.9850051175990424,
+    "pr_auc_average_precision": 0.9946427272925713,
+    "brier_score": 0.048350328299893754,
+    "confusion_matrix": [
+      [
+        1751,
+        195
+      ],
+      [
+        230,
+        5116
+      ]
+    ],
+    "sample_count": 7292,
+    "class_counts": {
+      "0": 1946,
+      "1": 5346
+    }
+  },
+  "test_metrics": {
+    "threshold": 0.33,
+    "accuracy": 0.9396599012616567,
+    "balanced_accuracy": 0.9293955511232999,
+    "precision": 0.9658314350797267,
+    "recall_sensitivity": 0.9513836948391923,
+    "specificity": 0.9074074074074074,
+    "false_positive_rate": 0.09259259259259259,
+    "f1": 0.9585531273549359,
+    "matthews_correlation_coefficient": 0.8480144029471459,
+    "roc_auc": 0.9856936634132679,
+    "pr_auc_average_precision": 0.9947369451043568,
+    "brier_score": 0.0467466339468956,
+    "confusion_matrix": [
+      [
+        441,
+        45
+      ],
+      [
+        65,
+        1272
+      ]
+    ],
+    "sample_count": 1823,
+    "class_counts": {
+      "0": 486,
+      "1": 1337
+    }
+  }
+}

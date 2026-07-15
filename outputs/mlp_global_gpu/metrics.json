@@ -1,0 +1,106 @@
+{
+  "model": {
+    "type": "global_mlp_baseline",
+    "hidden_dims": [
+      128,
+      64
+    ],
+    "dropout": 0.2,
+    "parameter_count": 18817
+  },
+  "configuration": {
+    "features": "D:\\desktop\\MosDet\\Mosquitoes_detection\\data\\processed\\humbugdb_mfcc\\mfcc_features.npy",
+    "labels": "D:\\desktop\\MosDet\\Mosquitoes_detection\\data\\processed\\humbugdb_mfcc\\labels.npy",
+    "groups": null,
+    "output_dir": "D:\\desktop\\MosDet\\Mosquitoes_detection\\outputs\\mlp_global_gpu",
+    "test_size": 0.2,
+    "folds": 5,
+    "epochs": 100,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "patience": 12,
+    "hidden_dim_1": 128,
+    "hidden_dim_2": 64,
+    "dropout": 0.2,
+    "num_workers": 0,
+    "seed": 2026,
+    "device": "cuda"
+  },
+  "device": "cuda",
+  "gpu_name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "threshold_source": "training out-of-fold predictions",
+  "elapsed_seconds": 43.88004310010001,
+  "fold_best_epochs": [
+    9,
+    32,
+    25,
+    5,
+    8
+  ],
+  "fold_best_validation_losses": [
+    0.07623635795455097,
+    0.05234526929501738,
+    0.074715689989765,
+    0.07736088132641607,
+    0.07827212228165079
+  ],
+  "oof_metrics": {
+    "threshold": 0.17,
+    "accuracy": 0.9829950630828305,
+    "balanced_accuracy": 0.9782711589266346,
+    "precision": 0.9884025439580996,
+    "recall_sensitivity": 0.9884025439580996,
+    "specificity": 0.9681397738951696,
+    "false_positive_rate": 0.03186022610483042,
+    "f1": 0.9884025439580996,
+    "matthews_correlation_coefficient": 0.956542317853269,
+    "roc_auc": 0.9957730304452926,
+    "pr_auc_average_precision": 0.9982640731025536,
+    "brier_score": 0.016473501938645736,
+    "confusion_matrix": [
+      [
+        1884,
+        62
+      ],
+      [
+        62,
+        5284
+      ]
+    ],
+    "sample_count": 7292,
+    "class_counts": {
+      "0": 1946,
+      "1": 5346
+    }
+  },
+  "test_metrics": {
+    "threshold": 0.17,
+    "accuracy": 0.9829950630828305,
+    "balanced_accuracy": 0.9759650159591986,
+    "precision": 0.9858630952380952,
+    "recall_sensitivity": 0.9910246821241586,
+    "specificity": 0.9609053497942387,
+    "false_positive_rate": 0.03909465020576132,
+    "f1": 0.9884371503170459,
+    "matthews_correlation_coefficient": 0.9563601590004623,
+    "roc_auc": 0.9968050823199165,
+    "pr_auc_average_precision": 0.9988142357242485,
+    "brier_score": 0.01819593459367752,
+    "confusion_matrix": [
+      [
+        467,
+        19
+      ],
+      [
+        12,
+        1325
+      ]
+    ],
+    "sample_count": 1823,
+    "class_counts": {
+      "0": 486,
+      "1": 1337
+    }
+  }
+}
