@@ -31,9 +31,9 @@ def code(text: str) -> dict:
 cells = [
     markdown(
         r"""
-        # PML大作业
+        # PML Course Project
 
-        导入实验所需的音频处理、机器学习、深度学习与可视化库，固定随机种子，并设置预处理、训练和 OOD 推理开关。同时自动定位项目目录、准备输出目录并统一图表样式。
+        Import the audio-processing, machine-learning, deep-learning, and visualization libraries used in this experiment. Fix the random seed, configure the preprocessing, training, and OOD-inference switches, locate the project root, prepare output directories, and apply a consistent plotting style.
         """
     ),
     code(
@@ -80,7 +80,7 @@ cells = [
                 if candidate and (candidate / "scripts").is_dir() and (candidate / "outputs").is_dir():
                     return candidate.resolve()
             raise FileNotFoundError(
-                "找不到项目根目录。请设置环境变量 MOSQUITO_PROJECT_ROOT 后重启内核。"
+                "Project root not found. Set MOSQUITO_PROJECT_ROOT and restart the kernel."
             )
 
         ROOT = find_project_root()
@@ -111,7 +111,7 @@ cells = [
                     if not destination.exists():
                         destination.parent.mkdir(parents=True, exist_ok=True)
                         destination.write_bytes(bundle.read(member))
-            print("已从 submission_data.zip 恢复快速复现文件。")
+            print("Fast-reproduction files were restored from submission_data.zip.")
 
         ensure_bundle_fallback()
 
@@ -139,16 +139,16 @@ cells = [
             plt.close(fig)
             return path.relative_to(ROOT)
 
-        print("项目根目录已自动解析；可用 MOSQUITO_PROJECT_ROOT 覆盖。")
-        print(f"图表目录: {FIG_DIR.relative_to(ROOT)}")
-        print(f"模式: preprocess={RUN_FULL_PREPROCESS}, training={RUN_TRAINING}, OOD inference={RUN_OOD_INFERENCE}")
+        print("The project root was detected automatically; MOSQUITO_PROJECT_ROOT can override it.")
+        print(f"Figure directory: {FIG_DIR.relative_to(ROOT)}")
+        print(f"Mode: preprocess={RUN_FULL_PREPROCESS}, training={RUN_TRAINING}, OOD inference={RUN_OOD_INFERENCE}")
         """
     ),
     markdown(
         r"""
-        ## 1. 文件路径与运行环境检查
+        ## 1. File Paths and Runtime Checks
 
-        定义本地文件与复现数据包的候选路径，检查标签、分组、checkpoint 和冻结预测是否齐全，并在缺少关键文件时给出明确错误信息。
+        Define candidate paths for local files and the reproducibility bundle, verify that labels, groups, checkpoints, and frozen predictions are available, and report a clear error when a required file is missing.
         """
     ),
     code(
@@ -178,17 +178,17 @@ cells = [
         if missing:
             lines = "\n".join(f"  - {path.relative_to(ROOT)}" for path in missing)
             raise FileNotFoundError(
-                "快速复现文件不完整：\n" + lines +
-                "\n请解压 submission_data.zip 到项目根目录，或恢复仓库 outputs/ 与 data/processed/。"
+                "Fast-reproduction files are incomplete:\n" + lines +
+                "\nExtract submission_data.zip at the project root, or restore the repository outputs/ and data/processed/ directories."
             )
-        print(f"快速复现检查通过：{len(required_fast)} 个关键文件均存在。")
+        print(f"Fast-reproduction check passed: all {len(required_fast)} required files are available.")
         """
     ),
     markdown(
         r"""
-        ## 2. 数据集构成统计
+        ## 2. Dataset Composition
 
-        读取 HumBugDB 标签和 OOD 评估记录，核对各类别及来源的样本数量，保存数据清单，并绘制 ID 与 OOD 数据构成图。
+        Load the HumBugDB labels and OOD evaluation records, verify sample counts by class and source, save the dataset manifest, and plot the ID and OOD dataset composition.
         """
     ),
     code(
@@ -219,36 +219,36 @@ cells = [
         fig, axes = plt.subplots(1, 2, figsize=(12, 4.6))
         axes[0].bar(["Mosquito", "Background"], [6683, 2432], color=[COLORS["purple"], COLORS["cyan"]])
         axes[0].set_title("ID · HumBugDB (n=9,115)", fontweight="bold")
-        axes[0].set_ylabel("有效片段数")
+        axes[0].set_ylabel("Valid clips")
         axes[0].text(0, 6683 + 120, "6,683 · 73.3%", ha="center", fontweight="bold")
         axes[0].text(1, 2432 + 120, "2,432", ha="center", fontweight="bold")
         ood_names = ["data1", "data2", "Vasconcelos", "other"]
         ood_counts = [70, 100, 1689, 10]
         axes[1].bar(ood_names, ood_counts, color=[COLORS["cyan"], COLORS["lavender"], COLORS["purple"], COLORS["orange"]])
         axes[1].set_title("OOD · 170 background + 1,699 mosquito", fontweight="bold")
-        axes[1].set_ylabel("有效片段数")
+        axes[1].set_ylabel("Valid clips")
         axes[1].tick_params(axis="x", rotation=18)
-        axes[1].text(1, 450, "100 clips\n同一源录音", ha="center", color=COLORS["red"], fontweight="bold")
+        axes[1].text(1, 450, "100 clips\nfrom one recording", ha="center", color=COLORS["red"], fontweight="bold")
         axes[1].text(2, 1720, "1,689 (+8 zero-length failed)", ha="center", fontsize=9)
         for ax in axes:
             ax.spines[["top", "right"]].set_visible(False)
             ax.grid(axis="y", color=COLORS["grid"], alpha=.6)
-        fig.suptitle("数据构成：训练域与真实分布偏移", fontsize=16, fontweight="bold")
+        fig.suptitle("Dataset Composition: Training Domain and Real Distribution Shift", fontsize=16, fontweight="bold")
         save_figure(fig, "fig_02_dataset_composition.png")
         manifest_df
         """
     ),
     markdown(
         r"""
-        ### 2.1 音频读取与 MFCC 示例
+        ### 2.1 Audio Loading and MFCC Examples
 
-        实现 8 kHz 重采样和 39 通道 MFCC/Delta/Delta² 提取，从 ID 与 OOD 数据中读取蚊虫及背景音频，并绘制四类样本的波形和 MFCC，同时提供音频播放器。
+        Implement 8 kHz resampling and 39-channel MFCC/Delta/Delta-squared extraction. Load mosquito and background audio from ID and OOD data, plot the waveform and MFCC for all four categories, and provide audio players.
         """
     ),
     code(
         r"""
         def extract_mfcc39(y: np.ndarray, sr: int = 8000) -> np.ndarray:
-            # 训练与 OOD 共用的 39 通道特征：13 MFCC + Delta + Delta²。
+            # Shared 39-channel representation for training and OOD: 13 MFCC + Delta + Delta-squared.
             if sr != 8000:
                 y = librosa.resample(y.astype(np.float32), orig_sr=sr, target_sr=8000)
                 sr = 8000
@@ -311,11 +311,11 @@ cells = [
             image = axes[row, 1].imshow(mfcc39, aspect="auto", origin="lower", cmap="magma")
             axes[row, 1].set(title=f"{name} · 39-channel MFCC", xlabel="frame", ylabel="channel")
             fig.colorbar(image, ax=axes[row, 1], fraction=.018, pad=.02)
-        fig.suptitle("同一预处理流程下的 ID / OOD 音频与 MFCC", fontsize=16, fontweight="bold")
+        fig.suptitle("ID and OOD Audio/MFCC Under the Same Preprocessing Pipeline", fontsize=16, fontweight="bold")
         fig.tight_layout()
         save_figure(fig, "fig_02_mfcc_examples.png")
 
-        print("音频播放器（每段最多 5 秒）：")
+        print("Audio players (up to 5 seconds per clip):")
         for name, (y, sr, member) in audio_examples.items():
             print(f"{name}: {member}")
             display(Audio(y, rate=sr))
@@ -323,9 +323,9 @@ cells = [
     ),
     markdown(
         r"""
-        ### 2.2 完整预处理入口
+        ### 2.2 Full Preprocessing Entry Point
 
-        封装从四个 HumBugDB 原始 ZIP 生成 MFCC 特征的命令。只有 `RUN_FULL_PREPROCESS=True` 时才执行完整预处理，否则沿用已有特征文件。
+        Define the command that generates MFCC features from the four raw HumBugDB ZIP archives. Full preprocessing runs only when `RUN_FULL_PREPROCESS=True`; otherwise, existing feature files are reused.
         """
     ),
     code(
@@ -337,7 +337,7 @@ cells = [
             expected.append(raw_dir / "neurips_2021_zenodo_0_0_1.csv")
             missing = [p for p in expected if not p.exists()]
             if missing:
-                raise FileNotFoundError("缺少官方 HumBugDB 文件：\n" + "\n".join(map(str, missing)))
+                raise FileNotFoundError("Required official HumBugDB files are missing:\n" + "\n".join(map(str, missing)))
             command = [
                 sys.executable, str(ROOT / "scripts/process_humbugdb_from_zip.py"),
                 "--zip-dir", str(raw_dir), "--csv", str(expected[-1]),
@@ -351,14 +351,14 @@ cells = [
         if RUN_FULL_PREPROCESS:
             run_full_humbug_preprocess()
         else:
-            print("RUN_FULL_PREPROCESS=False：使用现有 9,115 条 MFCC 特征。")
+            print("RUN_FULL_PREPROCESS=False: using the existing 9,115 MFCC feature records.")
         """
     ),
     markdown(
         r"""
-        ## 3. 短样本补零与长样本窗口化
+        ## 3. Short-Clip Padding and Long-Clip Windowing
 
-        实现尾部零帧裁剪、短样本补零、长样本滑窗和 78 维窗口统计特征，并用真实样本绘制三种随机补零位置及 50% 重叠窗口示例。
+        Implement trailing-zero trimming, short-clip padding, sliding windows for long clips, and 78-dimensional window statistics. Use real samples to illustrate three random padding positions and 50% overlapping windows.
         """
     ),
     code(
@@ -416,7 +416,7 @@ cells = [
             ax.text(left + short_mfcc.shape[1] / 2, .5, f"{short_mfcc.shape[1]} frames", ha="center", va="center", color="white", fontweight="bold")
         axes[-1].set_xlabel("64-frame training window")
         axes[0].legend(ncol=2, loc="upper right")
-        fig.suptitle("短样本：随机左右补零提供平移增强；验证/测试改用居中补零", fontweight="bold")
+        fig.suptitle("Short Clips: Random Padding for Translation Augmentation; Centered Padding for Validation/Test", fontweight="bold")
         save_figure(fig, "fig_03_short_padding.png")
 
         starts = window_starts(long_mfcc.shape[1])
@@ -426,16 +426,16 @@ cells = [
             ax.axvspan(start, start + WINDOW_SIZE, color=COLORS["purple"] if i % 2 == 0 else COLORS["cyan"], alpha=.13)
             ax.text(start + WINDOW_SIZE/2, ax.get_ylim()[1] * .88, str(i + 1), ha="center", fontsize=8)
         ax.axvline(starts[-1], color=COLORS["orange"], linestyle="--", label=f"right-aligned last start={starts[-1]}")
-        ax.set(xlabel="MFCC frame", ylabel="MFCC-0", title=f"长样本：64 帧窗口 / 32 帧步长 / 50% overlap（共 {len(starts)} 窗）")
+        ax.set(xlabel="MFCC frame", ylabel="MFCC-0", title=f"Long clip: 64-frame window / 32-frame stride / 50% overlap ({len(starts)} windows)")
         ax.legend(); ax.spines[["top", "right"]].set_visible(False)
         save_figure(fig, "fig_03_long_windowing.png")
         """
     ),
     markdown(
         r"""
-        ### 3.1 五折窗口概率与 Top-3 Mean
+        ### 3.1 Five-Fold Window Probabilities and Top-3 Mean
 
-        加载五折 Logistic MIL checkpoint，对一个真实长样本计算并平均窗口概率，标出概率最高的三个窗口，并将其均值作为片段级预测概率。
+        Load the five Logistic MIL fold checkpoints, compute and average window probabilities for a real long clip, highlight the three highest-probability windows, and use their mean as the clip-level probability.
         """
     ),
     code(
@@ -468,7 +468,7 @@ cells = [
         ax.axhline(clip_probability, color=COLORS["purple"], linestyle="--", label=f"Top-3 mean = {clip_probability:.3f}")
         for i in top_indices:
             ax.text(i + 1, window_probabilities[i] + .025, f"{window_probabilities[i]:.2f}", ha="center", fontweight="bold")
-        ax.set(xlabel="window index", ylabel="mosquito probability", ylim=(0, 1.08), title="真实样本的窗口概率：只聚合最高 3 个窗口")
+        ax.set(xlabel="window index", ylabel="mosquito probability", ylim=(0, 1.08), title="Window Probabilities for a Real Clip: Aggregate Only the Top Three")
         ax.legend(); ax.spines[["top", "right"]].set_visible(False)
         save_figure(fig, "fig_03_top3_pooling.png")
         print(f"Clip probability = mean(top 3) = {clip_probability:.4f}")
@@ -476,25 +476,25 @@ cells = [
     ),
     markdown(
         r"""
-        # 其他模型
+        # Other Models
 
-        本节只保留模型定义、实验路线与冻结预测复评。**不会重新训练这些候选模型**，因此 Notebook 的训练资源集中在最终 Logistic MIL。
+        This section retains model definitions, the experimental path, and reevaluation from frozen predictions. **These candidate models are not retrained**, so the notebook's training resources remain focused on the final Logistic MIL model.
         """
     ),
     markdown(
         r"""
-        ## 4.1 Baseline 与窗口 SVM 系列
+        ## 4.1 Baseline and Windowed SVM Variants
 
-        整理 SVM Baseline、SVM Pro、SVM Pro2 和 SVM Large 的输入形式、特征维度、聚合方法与主要观察，并生成方法演进表和流程图。由于没有同协议冻结预测，此处不计算 SVM 数值指标。
+        Summarize the inputs, feature dimensions, aggregation methods, and main observations for SVM Baseline, SVM Pro, SVM Pro2, and SVM Large. Generate a method-evolution table and flowchart. Numerical SVM metrics are not reported because frozen predictions under the shared protocol are unavailable.
         """
     ),
     code(
         r"""
         baseline_rows = [
-            ["SVM Baseline", "whole clip", "39×(Mean+Std)=78D", "single score", "时序信息被完全压平"],
-            ["SVM Pro", "64-frame windows", "78D / window", "Max", "对单个异常高分敏感"],
-            ["SVM Pro2", "64-frame windows", "78D / window", "Top-K Mean", "聚合更稳健，形成最终路线"],
-            ["SVM Large", "structured large input", "≈2432D", "single score", "高维、成本与过拟合风险上升"],
+            ["SVM Baseline", "whole clip", "39×(Mean+Std)=78D", "single score", "temporal structure is fully flattened"],
+            ["SVM Pro", "64-frame windows", "78D / window", "Max", "sensitive to a single anomalous high score"],
+            ["SVM Pro2", "64-frame windows", "78D / window", "Top-K Mean", "more robust aggregation; foundation of final method"],
+            ["SVM Large", "structured large input", "≈2432D", "single score", "higher dimension, cost, and overfitting risk"],
         ]
         baseline_df = pd.DataFrame(baseline_rows, columns=["model", "input", "dimension", "pooling", "observation"])
         baseline_df.to_csv(TABLE_DIR / "table_04_baseline_evolution.csv", index=False, encoding="utf-8-sig")
@@ -509,16 +509,16 @@ cells = [
             ax.text(i, .27, row.pooling, ha="center", fontsize=9)
             if i < 3:
                 ax.annotate("", xy=(i+.55, .5), xytext=(i+.43, .5), arrowprops=dict(arrowstyle="->", color=COLORS["orange"], lw=2))
-        ax.set(xlim=(-.6, 3.6), ylim=(0, 1), title="Baseline 演进：从全局压缩到窗口级 Top-K 聚合")
+        ax.set(xlim=(-.6, 3.6), ylim=(0, 1), title="Baseline Evolution: From Global Compression to Window-Level Top-K Aggregation")
         save_figure(fig, "fig_04_baseline_evolution.png")
         baseline_df
         """
     ),
     markdown(
         r"""
-        ## 4.2 候选模型结构与评估协议
+        ## 4.2 Candidate Model Structures and Evaluation Protocol
 
-        定义候选 MLP 的网络结构，汇总各模型的输入、架构、聚合方法和数据切分协议，并生成模型矩阵与防止数据泄漏的评估流程图。
+        Define the candidate MLP architectures, summarize each model's input, architecture, aggregation method, and split protocol, and generate a model matrix plus a leakage-prevention evaluation flowchart.
         """
     ),
     code(
@@ -553,7 +553,7 @@ cells = [
             cell.set_edgecolor(COLORS["grid"])
             if r == 0: cell.set_facecolor(COLORS["purple"]); cell.get_text().set_color("white"); cell.get_text().set_fontweight("bold")
             elif model_matrix.iloc[r-1, 0] == "Logistic MIL": cell.set_facecolor("#eee8fb")
-        ax1.set_title("模型输入、架构与聚合方式", fontweight="bold")
+        ax1.set_title("Model Inputs, Architectures, and Aggregation", fontweight="bold")
         ax2.axis("off")
         protocol = [
             "20% original-recording groups → held-out ID test",
@@ -567,24 +567,24 @@ cells = [
             ax2.text(.12, y, f"{i+1:02d}", fontsize=15, fontweight="bold", color=COLORS["purple"], va="center")
             ax2.text(.25, y, text, fontsize=9.5, va="center", wrap=True)
             if i < len(protocol)-1: ax2.annotate("", xy=(.17, y-.12), xytext=(.17, y-.05), arrowprops=dict(arrowstyle="->", color=COLORS["orange"]))
-        ax2.set_title("统一评估协议", fontweight="bold")
-        fig.suptitle("候选模型矩阵与防泄漏协议", fontsize=16, fontweight="bold")
+        ax2.set_title("Shared Evaluation Protocol", fontweight="bold")
+        fig.suptitle("Candidate Model Matrix and Leakage-Prevention Protocol", fontsize=16, fontweight="bold")
         save_figure(fig, "fig_05_model_matrix_and_protocol.png")
         model_matrix
         """
     ),
     markdown(
         r"""
-        # 最终模型：Logistic MIL
+        # Final Model: Logistic MIL
 
-        本节给出 Logistic MIL 的完整实现。后续代码依次定义标准化、Top-3 聚合、损失函数、分组切分、五折训练和 OOF 阈值选择。
+        This section provides the complete Logistic MIL implementation. The following code defines standardization, Top-3 aggregation, the loss function, group-disjoint splits, five-fold training, and OOF threshold selection.
         """
     ),
     markdown(
         r"""
-        ## 5.1 模型损失与 Group-disjoint 切分
+        ## 5.1 Model Loss and Group-Disjoint Splits
 
-        实现按训练折拟合的窗口标准化器、Top-3 Mean 聚合、类别加权 BCE、负窗口辅助损失，以及 group-disjoint 测试集和五折验证集切分，并检查所有分组交集为零。
+        Implement a window standardizer fitted on each training fold, Top-3 Mean aggregation, class-weighted BCE, the auxiliary negative-window loss, and group-disjoint test/five-fold validation splits. Verify that every pair of relevant group intersections is empty.
         """
     ),
     code(
@@ -651,9 +651,9 @@ cells = [
     ),
     markdown(
         r"""
-        ## 5.2 五折训练与早停
+        ## 5.2 Five-Fold Training and Early Stopping
 
-        定义 bag 数据集、变长窗口批处理、预测函数、单折训练循环和五折集成流程。训练采用 AdamW、学习率 0.01、batch size 64、最多 50 epochs 和 patience 8；只有 `RUN_TRAINING=True` 时才实际训练。
+        Define the bag dataset, variable-length window batching, prediction function, single-fold training loop, and five-fold ensemble workflow. Training uses AdamW, a 0.01 learning rate, 64 bags per batch, at most 50 epochs, and patience 8. Training runs only when `RUN_TRAINING=True`.
         """
     ),
     code(
@@ -742,20 +742,20 @@ cells = [
 
         if RUN_TRAINING:
             if not PATHS["features"].exists():
-                raise FileNotFoundError("完整训练需要 data/processed/humbugdb_mfcc/mfcc_features.npy")
+                raise FileNotFoundError("Full training requires data/processed/humbugdb_mfcc/mfcc_features.npy")
             prepared_mfcc = [trim_existing_zero_padding(np.asarray(item, dtype=np.float32)) for item in mfcc_all]
             in_memory_training_result = train_five_fold_logistic_mil(prepared_mfcc, labels, groups)
-            print("五折训练完成；结果仅保存在内存中，未隐式覆盖 checkpoint。")
+            print("Five-fold training completed; results remain in memory and do not overwrite checkpoints implicitly.")
         else:
             in_memory_training_result = None
-            print("RUN_TRAINING=False：加载五折 checkpoint 与冻结预测。")
+            print("RUN_TRAINING=False: loading five-fold checkpoints and frozen predictions.")
         """
     ),
     markdown(
         r"""
-        ## 5.3 OOF 阈值选择
+        ## 5.3 OOF Threshold Selection
 
-        加载 Logistic MIL 的冻结 OOF 与测试集概率，仅在训练池 OOF 预测上搜索 F1 最优阈值，并验证最终阈值为 0.32。
+        Load frozen Logistic MIL OOF and test probabilities, search for the F1-optimal threshold using training-pool OOF predictions only, and verify that the selected threshold is 0.32.
         """
     ),
     code(
@@ -772,9 +772,9 @@ cells = [
     ),
     markdown(
         r"""
-        ## 6.1 ID 测试集评估
+        ## 6.1 ID Test-Set Evaluation
 
-        定义统一的二分类指标函数，使用固定 OOF 阈值评估 group-disjoint ID 测试集，并绘制混淆矩阵、ROC 曲线和 Precision–Recall 曲线。
+        Define a shared binary-classification metric function, evaluate the group-disjoint ID test set with the fixed OOF threshold, and plot the confusion matrix, ROC curve, and precision-recall curve.
         """
     ),
     code(
@@ -814,9 +814,9 @@ cells = [
     ),
     markdown(
         r"""
-        ### 6.2 OOD 音频推理流程
+        ### 6.2 OOD Audio Inference Pipeline
 
-        定义四个 OOD ZIP 的路径和完整推理函数。开启 `RUN_OOD_INFERENCE` 时，代码会逐个读取音频、提取相同 MFCC 特征、执行五折 Logistic MIL 集成并返回片段概率；默认直接使用冻结概率。
+        Define paths for the four OOD ZIP archives and the complete inference function. When `RUN_OOD_INFERENCE` is enabled, the code reads each audio file, extracts the same MFCC representation, applies the five-fold Logistic MIL ensemble, and returns clip probabilities. By default, frozen probabilities are used directly.
         """
     ),
     code(
@@ -857,16 +857,16 @@ cells = [
 
         if RUN_OOD_INFERENCE:
             ood_inference = infer_ood_archives()
-            print(f"重新推理 {len(ood_inference)} 个有效 OOD 音频。")
+            print(f"Recomputed inference for {len(ood_inference)} valid OOD audio files.")
         else:
-            print("RUN_OOD_INFERENCE=False：使用固定 seed 2026 的 170+170 冻结概率。")
+            print("RUN_OOD_INFERENCE=False: using frozen probabilities for the fixed 170+170 sample selected with seed 2026.")
         """
     ),
     markdown(
         r"""
-        ### 6.3 候选模型的 ID/OOD 指标比较
+        ### 6.3 ID/OOD Comparison of Candidate Models
 
-        读取五种候选模型的冻结预测，使用各自训练 OOF 阈值统一重算 ID F1、ID FPR 和 OOD 指标，保存比较表，并绘制 OOD Recall–FPR 权衡图。
+        Load frozen predictions from five candidate models, recompute ID F1, ID FPR, and OOD metrics using each model's training-OOF threshold, save the comparison table, and plot the OOD recall-FPR trade-off.
         """
     ),
     code(
@@ -910,14 +910,14 @@ cells = [
             cell.set_edgecolor(COLORS["grid"])
             if r == 0: cell.set_facecolor(COLORS["purple"]); cell.get_text().set_color("white"); cell.get_text().set_fontweight("bold")
             elif display_table.iloc[r-1,0] == "Logistic MIL": cell.set_facecolor("#eee8fb"); cell.get_text().set_fontweight("bold")
-        ax.set_title("统一重算：ID 测试与固定阈值 OOD（170+170, seed 2026）", fontsize=15, fontweight="bold")
+        ax.set_title("Shared Recalculation: ID Test and Fixed-Threshold OOD (170+170, seed 2026)", fontsize=15, fontweight="bold")
         save_figure(fig, "table_06_model_comparison.png")
 
         fig, ax = plt.subplots(figsize=(8.5, 5.5))
         for row in comparison_rows:
             ax.scatter(row["OOD FPR"]*100, row["OOD Recall"]*100, s=130, color=COLORS["orange"] if row["Model"] == "Logistic MIL" else COLORS["purple"], alpha=.85)
             ax.annotate(row["Model"], (row["OOD FPR"]*100, row["OOD Recall"]*100), xytext=(5,5), textcoords="offset points", fontsize=8.5)
-        ax.set(xlabel="OOD false-positive rate ↓ (%)", ylabel="OOD recall ↑ (%)", xlim=(0, 48), ylim=(93, 101), title="OOD trade-off：召回相同，背景误报决定可靠性")
+        ax.set(xlabel="OOD false-positive rate ↓ (%)", ylabel="OOD recall ↑ (%)", xlim=(0, 48), ylim=(93, 101), title="OOD Trade-Off: Equal Recall, Reliability Determined by Background False Positives")
         ax.grid(color=COLORS["grid"], alpha=.7); ax.spines[["top","right"]].set_visible(False)
         save_figure(fig, "fig_06_ood_tradeoff.png")
         display_table
@@ -925,14 +925,14 @@ cells = [
     ),
     markdown(
         r"""
-        ### 6.4 OOD 背景概率分布变化
+        ### 6.4 Shift in OOD Background Probability Distributions
 
-        比较 MLP Global Grouped 与 Logistic MIL 在 ID 背景和 OOD 背景上的概率分布，并标出各自固定 OOF 阈值，用于分析 OOD 背景误报率上升的原因。
+        Compare the ID-background and OOD-background probability distributions of MLP Global Grouped and Logistic MIL. Mark each model's fixed OOF threshold to analyze why false-positive rates increase on OOD backgrounds.
         """
     ),
     code(
         r"""
-        # 阈值迁移诊断：MLP 在 ID 上很强，但固定 ID 阈值面对 OOD 背景时整体右移。
+        # Threshold-shift diagnosis: MLP is strong on ID, but OOD background probabilities shift right relative to its fixed ID threshold.
         fig, axes = plt.subplots(1, 2, figsize=(12, 4.4), sharey=True)
         for ax, name in zip(axes, ["MLP Global Grouped", "Logistic MIL"]):
             directory = MODEL_DIRS[name]
@@ -948,15 +948,15 @@ cells = [
             ax.set(xlabel="mosquito probability", title=name); ax.legend(fontsize=8)
             ax.spines[["top","right"]].set_visible(False)
         axes[0].set_ylabel("density")
-        fig.suptitle("OOD 背景概率右移：MLP 的固定阈值更易产生误报", fontsize=15, fontweight="bold")
+        fig.suptitle("OOD Background Probabilities Shift Right: MLP Produces More False Positives at Its Fixed Threshold", fontsize=15, fontweight="bold")
         save_figure(fig, "fig_06_mlp_threshold_shift.png")
         """
     ),
     markdown(
         r"""
-        ## 7. 结论与最终模型卡
+        ## 7. Conclusion and Final Model Card
 
-        从统一评估结果中提取 Logistic MIL 的 ID/OOD 指标、模型配置和实验局限，保存最终模型卡并生成总结图。
+        Extract Logistic MIL's ID/OOD metrics, model configuration, and experimental limitations from the shared evaluation results, save the final model card, and generate a summary figure.
         """
     ),
     code(
@@ -990,23 +990,23 @@ cells = [
             ax.text(.5, .32, label, ha="center", fontsize=12, fontweight="bold")
         ax = fig.add_subplot(gs[1, :]); ax.axis("off")
         conclusion = [
-            "机制解释：窗口化定位局部蚊声，Top-3 Mean 减少长背景造成的信号稀释",
-            "模型选择依据：线性分类头容量较小，OOD 背景误报率显著低于 MLP",
-            "局限：OOD 背景仅 170 个；data2 的 100 个片段同源；11.18% FPR 仍需降低",
+            "Mechanism: Windowing localizes short mosquito events; Top-3 Mean reduces dilution by long background segments.",
+            "Selection rationale: The low-capacity linear head yields substantially fewer OOD background false positives than MLP.",
+            "Limitations: Only 170 OOD backgrounds; 100 data2 clips share one source; the 11.18% FPR still needs improvement.",
         ]
         for i, line in enumerate(conclusion):
             ax.text(.06, .82-i*.30, f"0{i+1}", fontsize=16, fontweight="bold", color=COLORS["purple"], va="center")
             ax.text(.14, .82-i*.30, line, fontsize=12, va="center")
-        fig.suptitle("最终模型：Logistic MIL · 在分布偏移下选择更可靠的错误代价", fontsize=17, fontweight="bold")
+        fig.suptitle("Final Model: Logistic MIL · A More Reliable Error Trade-Off Under Distribution Shift", fontsize=17, fontweight="bold")
         save_figure(fig, "fig_07_final_model_summary.png")
         final_card
         """
     ),
     markdown(
         r"""
-        ## 附录：Threshold–Recall–FPR 曲线
+        ## Appendix: Threshold-Recall-FPR Curves
 
-        遍历 0.01–0.99 的分类阈值，分别计算训练集 OOF 与平衡 OOD 数据的 Recall/FPR 曲线，并检查所有预期图表和表格是否已经生成。
+        Sweep classification thresholds from 0.01 to 0.99, compute recall/FPR curves for training-pool OOF predictions and the balanced OOD audit set, and verify that all expected figures and tables have been generated.
         """
     ),
     code(
@@ -1044,7 +1044,7 @@ cells = [
         }
         assert expected_figures <= {p.name for p in FIG_DIR.glob("*")}
         assert expected_tables <= {p.name for p in TABLE_DIR.glob("*")}
-        print(f"验收通过：{len(expected_figures)} 张图 + {len(expected_tables)} 张表。")
+        print(f"Validation passed: {len(expected_figures)} figures and {len(expected_tables)} tables.")
         """
     ),
 ]

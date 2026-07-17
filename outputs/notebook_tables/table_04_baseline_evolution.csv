@@ -1,5 +1,5 @@
 ﻿model,input,dimension,pooling,observation
-SVM Baseline,whole clip,39×(Mean+Std)=78D,single score,时序信息被完全压平
-SVM Pro,64-frame windows,78D / window,Max,对单个异常高分敏感
-SVM Pro2,64-frame windows,78D / window,Top-K Mean,聚合更稳健，形成最终路线
-SVM Large,structured large input,≈2432D,single score,高维、成本与过拟合风险上升
+SVM Baseline,whole clip,39×(Mean+Std)=78D,single score,temporal structure is fully flattened
+SVM Pro,64-frame windows,78D / window,Max,sensitive to a single anomalous high score
+SVM Pro2,64-frame windows,78D / window,Top-K Mean,more robust aggregation; foundation of final method
+SVM Large,structured large input,≈2432D,single score,"higher dimension, cost, and overfitting risk"
