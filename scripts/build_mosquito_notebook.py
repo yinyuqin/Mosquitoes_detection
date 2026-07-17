@@ -420,14 +420,26 @@ cells = [
         save_figure(fig, "fig_03_short_padding.png")
 
         starts = window_starts(long_mfcc.shape[1])
-        fig, ax = plt.subplots(figsize=(12, 3.6))
+        fig, ax = plt.subplots(figsize=(12, 4.0))
         ax.plot(np.arange(long_mfcc.shape[1]), long_mfcc[0], color=COLORS["ink"], linewidth=.7, alpha=.7)
         for i, start in enumerate(starts):
-            ax.axvspan(start, start + WINDOW_SIZE, color=COLORS["purple"] if i % 2 == 0 else COLORS["cyan"], alpha=.13)
-            ax.text(start + WINDOW_SIZE/2, ax.get_ylim()[1] * .88, str(i + 1), ha="center", fontsize=8)
+            ax.axvspan(
+                start, start + WINDOW_SIZE,
+                color=COLORS["purple"] if i % 2 == 0 else COLORS["cyan"],
+                alpha=.13,
+                label="overlapping 64-frame windows" if i == 0 else None,
+            )
         ax.axvline(starts[-1], color=COLORS["orange"], linestyle="--", label=f"right-aligned last start={starts[-1]}")
-        ax.set(xlabel="MFCC frame", ylabel="MFCC-0", title=f"Long clip: 64-frame window / 32-frame stride / 50% overlap ({len(starts)} windows)")
-        ax.legend(); ax.spines[["top", "right"]].set_visible(False)
+        ax.set(xlabel="MFCC frame", ylabel="MFCC-0", title="Long-Clip Windowing")
+        ax.set_title("Long-Clip Windowing", pad=14, fontweight="bold")
+        ax.text(
+            .5, 1.015,
+            f"{len(starts)} windows · 64 frames each · stride 32 · 50% overlap",
+            transform=ax.transAxes, ha="center", va="bottom", fontsize=10,
+        )
+        ax.legend(loc="lower left", framealpha=.95)
+        ax.margins(x=.01)
+        ax.spines[["top", "right"]].set_visible(False)
         save_figure(fig, "fig_03_long_windowing.png")
         """
     ),
@@ -463,13 +475,27 @@ cells = [
         top_indices = np.argsort(window_probabilities)[-TOP_K:]
         clip_probability = float(window_probabilities[top_indices].mean())
         colors = [COLORS["orange"] if i in top_indices else COLORS["lavender"] for i in range(len(starts))]
-        fig, ax = plt.subplots(figsize=(12, 4.2))
+        fig, ax = plt.subplots(figsize=(12, 4.6))
         ax.bar(np.arange(1, len(starts) + 1), window_probabilities, color=colors)
         ax.axhline(clip_probability, color=COLORS["purple"], linestyle="--", label=f"Top-3 mean = {clip_probability:.3f}")
-        for i in top_indices:
-            ax.text(i + 1, window_probabilities[i] + .025, f"{window_probabilities[i]:.2f}", ha="center", fontweight="bold")
-        ax.set(xlabel="window index", ylabel="mosquito probability", ylim=(0, 1.08), title="Window Probabilities for a Real Clip: Aggregate Only the Top Three")
-        ax.legend(); ax.spines[["top", "right"]].set_visible(False)
+        plot_peak = float(window_probabilities.max())
+        plot_ceiling = max(.05, plot_peak * 2.5)
+        ranked_top = top_indices[np.argsort(window_probabilities[top_indices])[::-1]]
+        label_levels = np.linspace(plot_ceiling * .58, plot_ceiling * .90, TOP_K)
+        for rank, (i, label_y) in enumerate(zip(ranked_top, label_levels), start=1):
+            ax.annotate(
+                f"#{rank}  {window_probabilities[i]:.3f}",
+                xy=(i + 1, window_probabilities[i]), xytext=(i + 1, label_y),
+                ha="center", va="bottom", fontsize=9, fontweight="bold",
+                arrowprops={"arrowstyle": "-", "color": COLORS["orange"], "lw": 1},
+            )
+        ax.set(
+            xlabel="window index", ylabel="mosquito probability", ylim=(0, plot_ceiling),
+            title="Window Probabilities for a Real Clip: Aggregate Only the Top Three",
+        )
+        ax.legend(loc="upper right", framealpha=.95)
+        ax.margins(x=.01)
+        ax.spines[["top", "right"]].set_visible(False)
         save_figure(fig, "fig_03_top3_pooling.png")
         print(f"Clip probability = mean(top 3) = {clip_probability:.4f}")
         """
@@ -799,7 +825,7 @@ cells = [
         fpr, tpr, _ = roc_curve(labels[test_indices], frozen_test_prob)
         precision, recall, _ = precision_recall_curve(labels[test_indices], frozen_test_prob)
         cm = np.array(id_result["confusion_matrix"])
-        fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+        fig, axes = plt.subplots(1, 3, figsize=(14, 4.8))
         axes[0].imshow(cm, cmap="Purples")
         for (i, j), value in np.ndenumerate(cm): axes[0].text(j, i, value, ha="center", va="center", fontsize=14, fontweight="bold")
         axes[0].set(xticks=[0,1], yticks=[0,1], xticklabels=["background","mosquito"], yticklabels=["background","mosquito"], xlabel="predicted", ylabel="true", title="ID confusion matrix")
@@ -807,7 +833,8 @@ cells = [
         axes[1].set(xlabel="FPR", ylabel="Recall", title="ID ROC"); axes[1].legend()
         axes[2].plot(recall, precision, color=COLORS["orange"], lw=2, label=f"AP {id_result['average_precision']:.3f}")
         axes[2].set(xlabel="Recall", ylabel="Precision", title="ID precision–recall"); axes[2].legend()
-        fig.suptitle("Logistic MIL · held-out group-disjoint ID test", fontsize=15, fontweight="bold")
+        fig.subplots_adjust(left=.07, right=.98, bottom=.14, top=.78, wspace=.32)
+        fig.suptitle("Logistic MIL · Held-Out Group-Disjoint ID Test", y=.96, fontsize=15, fontweight="bold")
         save_figure(fig, "fig_06_logistic_mil_id_diagnostics.png")
         pd.DataFrame([{k: v for k, v in id_result.items() if k != "confusion_matrix"}])
         """
@@ -913,11 +940,23 @@ cells = [
         ax.set_title("Shared Recalculation: ID Test and Fixed-Threshold OOD (170+170, seed 2026)", fontsize=15, fontweight="bold")
         save_figure(fig, "table_06_model_comparison.png")
 
-        fig, ax = plt.subplots(figsize=(8.5, 5.5))
+        fig, ax = plt.subplots(figsize=(9.5, 5.8))
+        label_layout = {
+            "Logistic MIL": ((7, 7), "left"),
+            "MLP MIL": ((7, 7), "left"),
+            "Logistic Global*": ((7, 7), "left"),
+            "MLP Global*": ((-8, -18), "right"),
+            "MLP Global Grouped": ((8, 9), "left"),
+        }
         for row in comparison_rows:
-            ax.scatter(row["OOD FPR"]*100, row["OOD Recall"]*100, s=130, color=COLORS["orange"] if row["Model"] == "Logistic MIL" else COLORS["purple"], alpha=.85)
-            ax.annotate(row["Model"], (row["OOD FPR"]*100, row["OOD Recall"]*100), xytext=(5,5), textcoords="offset points", fontsize=8.5)
-        ax.set(xlabel="OOD false-positive rate ↓ (%)", ylabel="OOD recall ↑ (%)", xlim=(0, 48), ylim=(93, 101), title="OOD Trade-Off: Equal Recall, Reliability Determined by Background False Positives")
+            x, y = row["OOD FPR"] * 100, row["OOD Recall"] * 100
+            ax.scatter(x, y, s=130, color=COLORS["orange"] if row["Model"] == "Logistic MIL" else COLORS["purple"], alpha=.85, zorder=3)
+            offset, alignment = label_layout[row["Model"]]
+            ax.annotate(
+                row["Model"], (x, y), xytext=offset, textcoords="offset points",
+                ha=alignment, va="bottom" if offset[1] >= 0 else "top", fontsize=8.5,
+            )
+        ax.set(xlabel="OOD false-positive rate ↓ (%)", ylabel="OOD recall ↑ (%)", xlim=(0, 50), ylim=(93, 101), title="OOD Trade-Off: Equal Recall, Reliability Determined by Background False Positives")
         ax.grid(color=COLORS["grid"], alpha=.7); ax.spines[["top","right"]].set_visible(False)
         save_figure(fig, "fig_06_ood_tradeoff.png")
         display_table
@@ -1018,15 +1057,19 @@ cells = [
             ood_m = binary_metrics(ood_labels, ood_npz["logistic_mil_gpu"], candidate)
             oof_recall.append(oof_m["recall"]); oof_fpr.append(oof_m["false_positive_rate"])
             ood_recall.append(ood_m["recall"]); ood_fpr.append(ood_m["false_positive_rate"])
-        fig, axes = plt.subplots(1, 2, figsize=(12, 4.2), sharey=True)
+        fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), sharey=True)
         axes[0].plot(thresholds, oof_recall, label="OOF recall", color=COLORS["green"])
         axes[0].plot(thresholds, oof_fpr, label="OOF FPR", color=COLORS["orange"])
         axes[1].plot(thresholds, ood_recall, label="OOD recall (audit)", color=COLORS["green"])
         axes[1].plot(thresholds, ood_fpr, label="OOD FPR (audit)", color=COLORS["orange"])
         for ax, title in zip(axes, ["Training-pool OOF", "Balanced OOD · not for tuning"]):
             ax.axvline(threshold, color=COLORS["purple"], linestyle="--", label=f"selected {threshold:.2f}")
-            ax.set(xlabel="threshold", ylabel="rate", ylim=(0, 1.02), title=title); ax.legend(fontsize=8); ax.grid(color=COLORS["grid"], alpha=.6)
-        fig.suptitle("Threshold–Recall–FPR sensitivity", fontsize=15, fontweight="bold")
+            ax.set(xlabel="threshold", ylabel="rate", ylim=(0, 1.02), title=title)
+            ax.set_title(title, pad=10)
+            ax.legend(fontsize=8)
+            ax.grid(color=COLORS["grid"], alpha=.6)
+        fig.subplots_adjust(left=.07, right=.98, bottom=.14, top=.78, wspace=.20)
+        fig.suptitle("Threshold–Recall–FPR Sensitivity", y=.96, fontsize=15, fontweight="bold")
         save_figure(fig, "appendix_threshold_recall_fpr.png")
 
         expected_figures = {
