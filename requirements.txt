@@ -6,3 +6,8 @@ soundfile>=0.12.0
 matplotlib>=3.8.0
 scikit-learn>=1.4.0
 torch==2.12.1+cu130
+pandas>=2.2.0
+ipython>=8.0.0
+ipykernel>=6.0.0
+nbformat>=5.10.0
+nbclient>=0.10.0

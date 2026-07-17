@@ -36,6 +36,7 @@ from torch.utils.data import DataLoader, Dataset
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_DIR = ROOT / "data" / "processed" / "humbugdb_mfcc"
 DEFAULT_OUTPUT_DIR = ROOT / "outputs" / "mlp_global_gpu"
+DEFAULT_GROUPS_PATH = DEFAULT_DATA_DIR / "groups.npy"
 
 
 @dataclass(frozen=True)
@@ -113,7 +114,16 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--features", type=Path, default=DEFAULT_DATA_DIR / "mfcc_features.npy")
     parser.add_argument("--labels", type=Path, default=DEFAULT_DATA_DIR / "labels.npy")
-    parser.add_argument("--groups", type=Path, default=None)
+    parser.add_argument(
+        "--groups",
+        type=Path,
+        default=DEFAULT_GROUPS_PATH,
+        help=(
+            "Source-recording group IDs aligned with the MFCC samples. "
+            "Defaults to the preprocessed groups.npy so the holdout and CV "
+            "splits match the group-disjoint MIL protocol."
+        ),
+    )
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     
     parser.add_argument("--test-size", type=float, default=0.2)
@@ -144,6 +154,10 @@ def set_seed(seed: int) -> None:
 
 
 def validate_args(args: argparse.Namespace) -> None:
+    if args.groups is None:
+        raise ValueError("--groups is required for group-disjoint train/test and CV splits.")
+    if not args.groups.is_file():
+        raise FileNotFoundError(f"Group ID file does not exist: {args.groups}")
     if not 0.0 < args.test_size < 1.0:
         raise ValueError("--test-size must be between 0 and 1.")
     if args.folds < 2:
@@ -522,7 +536,7 @@ def main() -> None:
     validate_split_for_cross_validation(labels, train_indices, test_indices, args.folds, groups)
 
     if groups is None:
-        print("WARNING: no --groups file was provided. The split is sample-disjoint.")
+        raise RuntimeError("Group IDs were not loaded; refusing to use a sample-level split.")
         
     print(f"device={device}")
     if device.type == "cuda":

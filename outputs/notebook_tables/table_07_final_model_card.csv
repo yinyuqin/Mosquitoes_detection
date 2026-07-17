@@ -1,0 +1,12 @@
+﻿field,value
+Input,39-channel MFCC; 64-frame windows; 50% overlap
+Window classifier,"Linear(78, 1)"
+Pooling,Top-3 Mean
+Protocol,20% group test + 5-fold Stratified Group CV
+Threshold,0.32 (training-pool OOF only)
+ID F1,93.50%
+ID FPR,8.13%
+OOD Recall,100.00%
+OOD FPR,11.18%
+OOD Balanced Accuracy,94.41%
+Limitations,170 OOD backgrounds; data2 100 clips share one source; FPR remains 11.18%

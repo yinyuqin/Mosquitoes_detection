@@ -1,0 +1,7 @@
+﻿split,source,label,count,note
+ID,HumBugDB mosquito,1,6683,73.3% of valid ID clips
+ID,HumBugDB background,0,2432,grouped by original recording
+OOD,data1,0,70,independent background clips
+OOD,data2,0,100,segments from one source recording
+OOD,Vasconcelos,1,1689,8 zero-length files excluded
+OOD,other,1,10,additional mosquito recordings

@@ -1,0 +1,495 @@
+{
+  "protocol": {
+    "purpose": "read-only OOD evaluation",
+    "threshold_policy": "reuse each model's training OOF threshold without OOD tuning",
+    "fold_ensemble": "mean probability across all readable fold checkpoints",
+    "sample_rate": 8000,
+    "n_mfcc": 13,
+    "hop_length": 256,
+    "n_fft": 512,
+    "mfcc_channels": 39,
+    "global_feature_dimension": 78,
+    "device": "cuda",
+    "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU"
+  },
+  "dataset": {
+    "sample_count": 340,
+    "class_counts": {
+      "0": 170,
+      "1": 170
+    },
+    "loaded_valid_sample_count_before_selection": 1869,
+    "loaded_valid_class_counts_before_selection": {
+      "0": 170,
+      "1": 1699
+    },
+    "selection": {
+      "enabled": true,
+      "method": "uniform random positive downsampling without replacement",
+      "seed": 2026,
+      "positive_candidates": 1699,
+      "negative_samples_retained": 170,
+      "positive_samples_selected": 170,
+      "selected_dataset_counts": {
+        "negative_data1": 70,
+        "negative_data2": 100,
+        "positive_other": 2,
+        "positive_vasconcelos": 168
+      }
+    },
+    "dataset_counts": {
+      "negative_data1": 70,
+      "negative_data2": 100,
+      "positive_other": 2,
+      "positive_vasconcelos": 168
+    },
+    "failed_sample_count": 8,
+    "short_audio_padded_count": 0,
+    "failures": [
+      {
+        "sample_id": "positive_vasconcelos::AedesA_100.wav",
+        "archive": "ood_positive/vasconcelos.zip",
+        "error": "Audio file contains zero samples."
+      },
+      {
+        "sample_id": "positive_vasconcelos::AedesA_201.wav",
+        "archive": "ood_positive/vasconcelos.zip",
+        "error": "Audio file contains zero samples."
+      },
+      {
+        "sample_id": "positive_vasconcelos::AedesA_302.wav",
+        "archive": "ood_positive/vasconcelos.zip",
+        "error": "Audio file contains zero samples."
+      },
+      {
+        "sample_id": "positive_vasconcelos::AedesA_403.wav",
+        "archive": "ood_positive/vasconcelos.zip",
+        "error": "Audio file contains zero samples."
+      },
+      {
+        "sample_id": "positive_vasconcelos::AedesA_504.wav",
+        "archive": "ood_positive/vasconcelos.zip",
+        "error": "Audio file contains zero samples."
+      },
+      {
+        "sample_id": "positive_vasconcelos::AedesA_605.wav",
+        "archive": "ood_positive/vasconcelos.zip",
+        "error": "Audio file contains zero samples."
+      },
+      {
+        "sample_id": "positive_vasconcelos::AedesA_706.wav",
+        "archive": "ood_positive/vasconcelos.zip",
+        "error": "Audio file contains zero samples."
+      },
+      {
+        "sample_id": "positive_vasconcelos::AedesA_807.wav",
+        "archive": "ood_positive/vasconcelos.zip",
+        "error": "Audio file contains zero samples."
+      }
+    ],
+    "data2_independence_note": "negative_data2 contains segments from one origin recording; sample-level metrics must not be interpreted as 100 independent recordings."
+  },
+  "models": {
+    "logistic_global_gpu": {
+      "family": "logistic_global",
+      "weights_directory": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\outputs\\logistic_global_gpu",
+      "fold_count": 5,
+      "ensemble": "mean probability across folds",
+      "threshold_source": "training out-of-fold predictions; OOD was not used for tuning",
+      "overall": {
+        "threshold": 0.33,
+        "accuracy": 0.8911764705882353,
+        "balanced_accuracy": 0.8911764705882352,
+        "precision": 0.8481675392670157,
+        "recall_sensitivity": 0.9529411764705882,
+        "specificity": 0.8294117647058824,
+        "false_positive_rate": 0.17058823529411765,
+        "f1": 0.8975069252077562,
+        "matthews_correlation_coefficient": 0.788391299998248,
+        "roc_auc": 0.968961937716263,
+        "pr_auc_average_precision": 0.9716439026588646,
+        "brier_score": 0.06940337880818864,
+        "confusion_matrix": [
+          [
+            141,
+            29
+          ],
+          [
+            8,
+            162
+          ]
+        ],
+        "sample_count": 340,
+        "class_counts": {
+          "0": 170,
+          "1": 170
+        },
+        "mean_probability": 0.5320450335683524
+      },
+      "by_dataset": {
+        "negative_data1": {
+          "label": 0,
+          "sample_count": 70,
+          "threshold": 0.33,
+          "mean_probability": 0.18516595830735322,
+          "median_probability": 0.014981648698449136,
+          "positive_prediction_rate": 0.2,
+          "specificity": 0.8,
+          "false_positive_rate": 0.2
+        },
+        "negative_data2": {
+          "label": 0,
+          "sample_count": 100,
+          "threshold": 0.33,
+          "mean_probability": 0.12783398759810985,
+          "median_probability": 0.017381581477820873,
+          "positive_prediction_rate": 0.15,
+          "specificity": 0.85,
+          "false_positive_rate": 0.15
+        },
+        "positive_other": {
+          "label": 1,
+          "sample_count": 2,
+          "threshold": 0.33,
+          "mean_probability": 0.9747699260711671,
+          "median_probability": 0.9747699260711671,
+          "positive_prediction_rate": 1.0,
+          "recall_sensitivity": 1.0,
+          "false_negative_rate": 0.0
+        },
+        "positive_vasconcelos": {
+          "label": 1,
+          "sample_count": 168,
+          "threshold": 0.33,
+          "mean_probability": 0.9119092602367367,
+          "median_probability": 0.9985945641994476,
+          "positive_prediction_rate": 0.9523809523809523,
+          "recall_sensitivity": 0.9523809523809523,
+          "false_negative_rate": 0.04761904761904767
+        }
+      },
+      "elapsed_seconds": 0.39775629999348894
+    },
+    "logistic_mil_gpu": {
+      "family": "logistic_mil",
+      "weights_directory": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\outputs\\logistic_mil_gpu",
+      "fold_count": 5,
+      "ensemble": "mean probability across folds",
+      "threshold_source": "training out-of-fold predictions; OOD was not used for tuning",
+      "overall": {
+        "threshold": 0.32,
+        "accuracy": 0.9441176470588235,
+        "balanced_accuracy": 0.9441176470588235,
+        "precision": 0.8994708994708994,
+        "recall_sensitivity": 1.0,
+        "specificity": 0.888235294117647,
+        "false_positive_rate": 0.11176470588235295,
+        "f1": 0.947075208913649,
+        "matthews_correlation_coefficient": 0.8938354428762595,
+        "roc_auc": 0.986401384083045,
+        "pr_auc_average_precision": 0.981692645518126,
+        "brier_score": 0.03572517980342701,
+        "confusion_matrix": [
+          [
+            151,
+            19
+          ],
+          [
+            0,
+            170
+          ]
+        ],
+        "sample_count": 340,
+        "class_counts": {
+          "0": 170,
+          "1": 170
+        },
+        "mean_probability": 0.5132422238536306
+      },
+      "by_dataset": {
+        "negative_data1": {
+          "label": 0,
+          "sample_count": 70,
+          "threshold": 0.32,
+          "mean_probability": 0.19312816808272376,
+          "median_probability": 0.03229207716649399,
+          "positive_prediction_rate": 0.2571428571428571,
+          "specificity": 0.7428571428571429,
+          "false_positive_rate": 0.2571428571428571
+        },
+        "negative_data2": {
+          "label": 0,
+          "sample_count": 100,
+          "threshold": 0.32,
+          "mean_probability": 0.030891510610432302,
+          "median_probability": 0.010656622890383004,
+          "positive_prediction_rate": 0.01,
+          "specificity": 0.99,
+          "false_positive_rate": 0.01
+        },
+        "positive_other": {
+          "label": 1,
+          "sample_count": 2,
+          "threshold": 0.32,
+          "mean_probability": 0.6716309875249862,
+          "median_probability": 0.6716309875249862,
+          "positive_prediction_rate": 1.0,
+          "recall_sensitivity": 1.0,
+          "false_negative_rate": 0.0
+        },
+        "positive_vasconcelos": {
+          "label": 1,
+          "sample_count": 168,
+          "threshold": 0.32,
+          "mean_probability": 0.9318510196925628,
+          "median_probability": 0.9886139810085297,
+          "positive_prediction_rate": 1.0,
+          "recall_sensitivity": 1.0,
+          "false_negative_rate": 0.0
+        }
+      },
+      "elapsed_seconds": 0.46360039999126457
+    },
+    "mlp_global_gpu": {
+      "family": "mlp_global",
+      "weights_directory": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\outputs\\mlp_global_gpu",
+      "fold_count": 5,
+      "ensemble": "mean probability across folds",
+      "threshold_source": "training out-of-fold predictions; OOD was not used for tuning",
+      "overall": {
+        "threshold": 0.17,
+        "accuracy": 0.7852941176470588,
+        "balanced_accuracy": 0.7852941176470588,
+        "precision": 0.6995884773662552,
+        "recall_sensitivity": 1.0,
+        "specificity": 0.5705882352941176,
+        "false_positive_rate": 0.4294117647058823,
+        "f1": 0.8232445520581114,
+        "matthews_correlation_coefficient": 0.6318045225641474,
+        "roc_auc": 0.9935640138408304,
+        "pr_auc_average_precision": 0.9877215817540841,
+        "brier_score": 0.10920751401353537,
+        "confusion_matrix": [
+          [
+            97,
+            73
+          ],
+          [
+            0,
+            170
+          ]
+        ],
+        "sample_count": 340,
+        "class_counts": {
+          "0": 170,
+          "1": 170
+        },
+        "mean_probability": 0.646947135974992
+      },
+      "by_dataset": {
+        "negative_data1": {
+          "label": 0,
+          "sample_count": 70,
+          "threshold": 0.17,
+          "mean_probability": 0.40015885236540005,
+          "median_probability": 0.3712151050567627,
+          "positive_prediction_rate": 0.5714285714285714,
+          "specificity": 0.4285714285714286,
+          "false_positive_rate": 0.5714285714285714
+        },
+        "negative_data2": {
+          "label": 0,
+          "sample_count": 100,
+          "threshold": 0.17,
+          "mean_probability": 0.2231961485458887,
+          "median_probability": 0.013876015134155751,
+          "positive_prediction_rate": 0.33,
+          "specificity": 0.6699999999999999,
+          "false_positive_rate": 0.33
+        },
+        "positive_other": {
+          "label": 1,
+          "sample_count": 2,
+          "threshold": 0.17,
+          "mean_probability": 0.9969319581985474,
+          "median_probability": 0.9969319581985474,
+          "positive_prediction_rate": 1.0,
+          "recall_sensitivity": 1.0,
+          "false_negative_rate": 0.0
+        },
+        "positive_vasconcelos": {
+          "label": 1,
+          "sample_count": 168,
+          "threshold": 0.17,
+          "mean_probability": 0.9978418321126984,
+          "median_probability": 0.9982088804244995,
+          "positive_prediction_rate": 1.0,
+          "recall_sensitivity": 1.0,
+          "false_negative_rate": 0.0
+        }
+      },
+      "elapsed_seconds": 0.11886719998437911
+    },
+    "mlp_global_gpu_grouped": {
+      "family": "mlp_global",
+      "weights_directory": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\outputs\\mlp_global_gpu_grouped",
+      "fold_count": 5,
+      "ensemble": "mean probability across folds",
+      "threshold_source": "training out-of-fold predictions; OOD was not used for tuning",
+      "overall": {
+        "threshold": 0.2,
+        "accuracy": 0.7911764705882353,
+        "balanced_accuracy": 0.7911764705882354,
+        "precision": 0.7053941908713693,
+        "recall_sensitivity": 1.0,
+        "specificity": 0.5823529411764706,
+        "false_positive_rate": 0.4176470588235294,
+        "f1": 0.8272506082725061,
+        "matthews_correlation_coefficient": 0.6409277507978092,
+        "roc_auc": 0.9940484429065745,
+        "pr_auc_average_precision": 0.9911935722847681,
+        "brier_score": 0.11966830045464616,
+        "confusion_matrix": [
+          [
+            99,
+            71
+          ],
+          [
+            0,
+            170
+          ]
+        ],
+        "sample_count": 340,
+        "class_counts": {
+          "0": 170,
+          "1": 170
+        },
+        "mean_probability": 0.6544509815086905
+      },
+      "by_dataset": {
+        "negative_data1": {
+          "label": 0,
+          "sample_count": 70,
+          "threshold": 0.2,
+          "mean_probability": 0.433340601966733,
+          "median_probability": 0.38441775366663933,
+          "positive_prediction_rate": 0.5571428571428572,
+          "specificity": 0.44285714285714284,
+          "false_positive_rate": 0.5571428571428572
+        },
+        "negative_data2": {
+          "label": 0,
+          "sample_count": 100,
+          "threshold": 0.2,
+          "mean_probability": 0.22665759833378252,
+          "median_probability": 0.017581373522989455,
+          "positive_prediction_rate": 0.32,
+          "specificity": 0.6799999999999999,
+          "false_positive_rate": 0.32
+        },
+        "positive_other": {
+          "label": 1,
+          "sample_count": 2,
+          "threshold": 0.2,
+          "mean_probability": 0.9969446718692779,
+          "median_probability": 0.9969446718692779,
+          "positive_prediction_rate": 1.0,
+          "recall_sensitivity": 1.0,
+          "false_negative_rate": 0.0
+        },
+        "positive_vasconcelos": {
+          "label": 1,
+          "sample_count": 168,
+          "threshold": 0.2,
+          "mean_probability": 0.9971419190367063,
+          "median_probability": 0.9979466795921326,
+          "positive_prediction_rate": 1.0,
+          "recall_sensitivity": 1.0,
+          "false_negative_rate": 0.0
+        }
+      },
+      "elapsed_seconds": 0.07189039999502711
+    },
+    "mlp_mil_gpu": {
+      "family": "mlp_mil",
+      "weights_directory": "E:\\DataFiles\\CodeLibrary\\Agents\\Codex\\PML\\outputs\\mlp_mil_gpu",
+      "fold_count": 5,
+      "ensemble": "mean probability across folds",
+      "threshold_source": "training out-of-fold predictions; OOD was not used for tuning",
+      "overall": {
+        "threshold": 0.2,
+        "accuracy": 0.9117647058823529,
+        "balanced_accuracy": 0.9117647058823529,
+        "precision": 0.85,
+        "recall_sensitivity": 1.0,
+        "specificity": 0.8235294117647058,
+        "false_positive_rate": 0.17647058823529413,
+        "f1": 0.918918918918919,
+        "matthews_correlation_coefficient": 0.8366600265340756,
+        "roc_auc": 0.9874740484429066,
+        "pr_auc_average_precision": 0.9743140538527151,
+        "brier_score": 0.03303981091362762,
+        "confusion_matrix": [
+          [
+            140,
+            30
+          ],
+          [
+            0,
+            170
+          ]
+        ],
+        "sample_count": 340,
+        "class_counts": {
+          "0": 170,
+          "1": 170
+        },
+        "mean_probability": 0.492466449953054
+      },
+      "by_dataset": {
+        "negative_data1": {
+          "label": 0,
+          "sample_count": 70,
+          "threshold": 0.2,
+          "mean_probability": 0.12037036055416268,
+          "median_probability": 0.03132777672726661,
+          "positive_prediction_rate": 0.2,
+          "specificity": 0.8,
+          "false_positive_rate": 0.2
+        },
+        "negative_data2": {
+          "label": 0,
+          "sample_count": 100,
+          "threshold": 0.2,
+          "mean_probability": 0.07278390733047854,
+          "median_probability": 0.0137323044706136,
+          "positive_prediction_rate": 0.16,
+          "specificity": 0.84,
+          "false_positive_rate": 0.16
+        },
+        "positive_other": {
+          "label": 1,
+          "sample_count": 2,
+          "threshold": 0.2,
+          "mean_probability": 0.7025843888521195,
+          "median_probability": 0.7025843888521195,
+          "positive_prediction_rate": 1.0,
+          "recall_sensitivity": 1.0,
+          "false_negative_rate": 0.0
+        },
+        "positive_vasconcelos": {
+          "label": 1,
+          "sample_count": 168,
+          "threshold": 0.2,
+          "mean_probability": 0.8948161204434222,
+          "median_probability": 0.9534033834934235,
+          "positive_prediction_rate": 1.0,
+          "recall_sensitivity": 1.0,
+          "false_negative_rate": 0.0
+        }
+      },
+      "elapsed_seconds": 0.19859850002103485
+    }
+  },
+  "elapsed_seconds": 22.325694099999964
+}

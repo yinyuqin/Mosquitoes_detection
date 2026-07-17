@@ -1,0 +1,7 @@
+﻿model,input,architecture,aggregation,protocol
+SVM Baseline,global 78D,SVM,none,sample-level / legacy
+Logistic Global*,global 78D,"Linear(78,1)",none,sample-level
+MLP Global*,global 78D,78→128→64→1,none,sample-level
+MLP Global Grouped,global 78D,78→128→64→1,none,group-disjoint
+MLP MIL,64-frame 78D,78→128→64→1,Top-3 Mean,group-disjoint
+Logistic MIL,64-frame 78D,"Linear(78,1)",Top-3 Mean,group-disjoint · final
